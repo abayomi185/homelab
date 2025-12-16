@@ -1,7 +1,7 @@
 ---
 device_name: YHLD-MSDO1
 human_name: YHLD Mac Studio 1
-location: [[../racks/YHLR-SR1.md]]
+location: [[../racks/YHLR-SVRK1.md]]
 subnet: ["10.0.1.0/24"]
 tags: ["workstation", "mac"]
 ---
