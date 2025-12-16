@@ -1,7 +1,10 @@
 # Yomi's Homelab Networking
 
-Devices in the homelab are referenced as YHL-[DeviceName], e.g., YHL-FW1 for the firewall, YHL-SW1 for the main switch, etc. See the table below for a list of devices and their roles.
+Devices in the homelab are referenced as YHLD-[DeviceName], e.g., YHLD-FRWL1 for the firewall, YHLD-SWCH1 for the main switch, etc. See the table below for a list of devices and their roles.
 
-| Device ID | Device  | Description | Role |
-| --------- | ------- | ----------- | ---- |
-| YHL-FW1   | Item3.1 | Item4.1     |      |
+| Device                      | Role |
+| --------------------------- | ---- |
+| [[./devices/YHLD-FRWL1.md]] |      |
+| [[./devices/YHLD-SWCH1.md]] |      |
+| [[./devices/YHLD-SERV1.md]] |      |
+| [[./devices/YHLD-MSDO1.md]] |      |
