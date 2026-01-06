@@ -1,6 +1,7 @@
 # TODO
 
-- [ ] OPNSense does not route traffic for hosts that do not have a valid DHCP lease
+- [x] OPNSense does not route traffic for hosts that do not have a valid DHCP lease
+  - Will go with DHCP for all hosts
 - [x] Configure SuperMicro IPMI fan thresholds using ipmitool
 
   ```bash
