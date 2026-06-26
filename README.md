@@ -1,10 +1,16 @@
 # Yomi's Homelab (YHL)
 
-> Details, guides and information about Yomi’s homelab
+For the full picture — hardware, network topology, services, conventions — see
+**[CONTEXT.md](./CONTEXT.md)**. That is the authoritative reference for this
+repository.
 
-<!-- Image of server rack here from ./assets -->
+## Index
 
-<!-- Overview of the homelab setup, including hardware specifications, network architecture, and the purpose of the lab, with links to the other markdown files with details e.g NETWORKING.md-->
-
-For racks, see [[./racks/]]
-For devices, see: [[./devices/]]
+| Document | Purpose |
+|----------|---------|
+| [CONTEXT.md](./CONTEXT.md) | Core truths, editorial guidance, architecture overview |
+| [NETWORKING.md](./NETWORKING.md) | Network device table and VLAN layout |
+| [POWER.md](./POWER.md) | Power management |
+| [devices/](./devices/) | Per-device notes (YHLD-*) |
+| [racks/](./racks/) | Rack notes (YHLR-*) |
+| [network/vlan/](./network/vlan/) | VLAN-specific configs |
