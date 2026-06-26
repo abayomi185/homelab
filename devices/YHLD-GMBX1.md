@@ -2,24 +2,31 @@
 device_name: YHLD-GMBX1
 human_name: YHLD GameBox 1
 location: [[../racks/YHLR-SVRK1.md]]
-subnet: ["10.0.1.0/24"]
-tags: ["gaming", "pc", "masterrace"]
+subnet: ["10.1.10.0/24"]
+tags: ["gaming", "pc", "windows"]
 ---
 
 # YHLD GameBox 1
 
-## Specs:
+## Hardware
 
 | /       |                           |
 | ------- | ------------------------- |
-| Model   | Mac Studio (M1 Max, 2022) |
-| CPU     | Apple M1 Max (10-core)    |
-| RAM     | 64GB                      |
-| Storage | 1TB SSD                   |
-| GPU     | Integrated 32-core GPU    |
+| CPU     | AMD Ryzen 5 5600 (AM4)    |
+| RAM     | 64 GB                     |
+| Storage | 1 TB SSD                  |
+| GPU     | AMD Radeon RX-series GPU  |
 
-## Network:
+## Software
 
-| /   |     |
-| --- | --- |
-|     |     |
+| /   |                |
+| --- | -------------- |
+| OS  | Windows 11 Pro |
+
+## Network
+
+| /        |                    |
+| -------- | ------------------ |
+| Hostname | `GameBox`          |
+| Segment  | Main LAN / VLAN 10 |
+| Subnet   | `10.1.10.0/24`     |
