@@ -8,7 +8,7 @@ tags: ["server-rack", "YHLR", "rack"]
 
 | Device | Role | Stable network facts |
 | ------ | ---- | -------------------- |
-| [[../devices/YHLD-SERV1.md\|YHLD-SERV1]] | Proxmox hypervisor | hostnames `pve`, `pve-firewall` |
+| [[../devices/YHLD-SERV1/YHLD-SERV1.md\|YHLD-SERV1]] | Proxmox hypervisor | hostnames `pve`, `pve-firewall` |
 | [[../devices/YHLD-FRWL1.md\|YHLD-FRWL1]] | Firewall VM on Proxmox | hostname `firewall`; LAN gateways + WireGuard |
 | [[../devices/YHLD-SWCH1/YHLD-SWCH1.md\|YHLD-SWCH1]] | Core switch | hostname `MikroTik_Switch` |
 | [[../devices/YHLD-MSDO1.md\|YHLD-MSDO1]] | Mac Studio workstation | flake `Mac-Studio` |
