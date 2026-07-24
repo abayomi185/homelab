@@ -1,7 +1,7 @@
 ---
 device_name: YHLD-SERV1
 human_name: YHLD Server 1
-location: [[../racks/YHLR-SVRK1.md]]
+location: [[../../racks/YHLR-SVRK1.md]]
 subnet: ["10.1.5.0/24", "10.0.7.0/24"]
 tags: ["server", "hypervisor", "proxmox", "amd-epyc"]
 ---
@@ -14,7 +14,7 @@ tags: ["server", "hypervisor", "proxmox", "amd-epyc"]
 | ---- | ------------------------------- |
 | CPU  | AMD EPYC (1.50 GHz – 3.31 GHz)  |
 | Role | Proxmox VE hypervisor           |
-| BMC  | [[./YHLD-IPMI1.md\|YHLD-IPMI1]] |
+| BMC  | [[../YHLD-IPMI1.md\|YHLD-IPMI1]] |
 
 ## Network
 
@@ -79,3 +79,7 @@ To check energy performance preference options:
 ```sh
 cat /sys/devices/system/cpu/cpu0/cpufreq/energy_performance_available_preferences
 ```
+
+## Operations
+
+- [Temporary root SSH access](./TEMPORARY-ROOT-SSH.md)

@@ -72,7 +72,7 @@ Do not enter live wattage here unless it is a long-term observed range.
 
 | Device | Role | Power notes |
 | --- | --- | --- |
-| [[./devices/YHLD-SERV1.md\|YHLD-SERV1]] | Proxmox hypervisor | Largest baseline load; CPU/GPU/storage spikes expected |
+| [[./devices/YHLD-SERV1/YHLD-SERV1.md\|YHLD-SERV1]] | Proxmox hypervisor | Largest baseline load; CPU/GPU/storage spikes expected |
 | [[./devices/YHLD-SWCH1/YHLD-SWCH1.md\|YHLD-SWCH1]] | Core switch | Always-on network dependency |
 | [[./devices/YHLD-ACPT1/YHLD-ACPT.md\|YHLD-ACPT1]] | WiFi AP | Always-on network dependency |
 | [[./devices/YHLD-IPMI1.md\|YHLD-IPMI1]] | Server BMC | Shares server power path |
