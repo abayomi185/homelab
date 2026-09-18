@@ -19,9 +19,9 @@ A single-hypervisor homelab providing:
 - **Hypervisor**: `YHLD-SERV1`, a Proxmox VE host.
 - **Firewall**: `YHLD-FRWL1`, a NixOS VM on Proxmox. It replaced OPNsense.
 - **Cluster**: k3s on `knode1`–`knode4`; `knode1` is the server/init node.
-- **Ingress**: `kloadbalancer.internal.yomitosh.media` / Traefik.
+- **Ingress**: in-cluster Traefik and MetalLB for Kubernetes app routes; the older `kloadbalancer` LXC still has non-Kubernetes routes. See [recovery sources](./RECOVERY.md#sources-and-maintenance).
 - **Storage**: `network-share.internal.yomitosh.media` LXC provides Samba, NFS, FTP, and Time Machine service.
-- **Audio**: `l-audio-share.internal.yomitosh.media`.
+- **Audio**: dedicated `sonamesh` VM for SonaMesh/PipeWire and AirPlay; the older `l-audio-share` LXC remains separately configured.
 - **ML**: `machine-learning.internal.yomitosh.media`; its NixOS flake entry is currently commented out, while Home Manager config remains active.
 
 ## Network Segments
@@ -49,6 +49,9 @@ Clients → Unbound (:53)
 
 `Dnsmasq` is the DHCP authority for LAN segments. Static DHCP reservations double
 as local DNS records under `internal.yomitosh.media`.
+
+For failure dependencies, recovery order, and outstanding restore questions, see
+[the recovery map](./RECOVERY.md). It describes reviewed configuration, not live health.
 
 ## Configuration Repositories
 
