@@ -71,8 +71,9 @@ screen still goes black:
 
   Start what you need by hand afterwards (`qm start 506`).
 - **SR-IOV driver breaks boot:** append `module_blacklist=i915,xe` instead.
-- knode4 also has `startup: up=300`, so you get ~5 minutes of console after boot
-  before it starts.
+
+Proxmox `startup: up=N` does not delay a VM's own start; it is the wait
+*after* that VM starts before the next one. It can't buy console time.
 
 Check what holds the GPU:
 

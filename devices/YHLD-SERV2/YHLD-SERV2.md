@@ -38,7 +38,7 @@ UDP DNS on `10.1.1.1` from VLAN 5, so `10.1.5.1` must stay first.
 | ---- | ---- | ----- |
 | 506 | `firewall` | [[../YHLD-FRWL1.md\|YHLD-FRWL1]], `onboot` |
 | 306 | `home-assistant` | `onboot`, startup order 2 |
-| 704 | `knode4` | k3s GPU node, iGPU SR-IOV VF `00:02.1`, `startup: up=300` |
+| 704 | `knode4` | k3s GPU node, iGPU SR-IOV VF `00:02.1` |
 
 All VM disks use `discard=on`. The thin pool is close to fully provisioned
 (24G + 32G + 32G), so keep an eye on `lvs` Data%.
