@@ -10,7 +10,7 @@ tags: ["firewall", "networking", "security", "nixos"]
 
 ## Overview
 
-NixOS VM running on Proxmox. The firewall replaced OPNsense and is now the
+NixOS VM (VMID 506) running on [[YHLD-SERV2/YHLD-SERV2.md|YHLD-SERV2]]. The firewall replaced OPNsense and is now the
 single router, NAT gateway, DHCP authority, DNS entrypoint, and WireGuard client
 for the homelab.
 

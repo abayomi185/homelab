@@ -6,7 +6,7 @@ inventory belongs in `devices/`, rack placement in `racks/`, and network facts i
 
 ## Purpose
 
-A single-hypervisor homelab providing:
+A two-hypervisor homelab providing:
 
 - Routing, firewalling, DNS, DHCP, mDNS reflection, and WireGuard remote access.
 - Kubernetes workloads managed with GitOps.
@@ -16,8 +16,8 @@ A single-hypervisor homelab providing:
 ## Durable Architecture
 
 - **Primary rack**: `YHLR-SVRK1`.
-- **Hypervisor**: `YHLD-SERV1`, a Proxmox VE host.
-- **Firewall**: `YHLD-FRWL1`, a NixOS VM on Proxmox. It replaced OPNsense.
+- **Hypervisors**: `YHLD-SERV1` (`pve`, main Proxmox VE host) and `YHLD-SERV2` (`pve-firewall`, standalone Proxmox VE host for the firewall, Home Assistant and `knode4`).
+- **Firewall**: `YHLD-FRWL1`, a NixOS VM on `YHLD-SERV2`. It replaced OPNsense.
 - **Cluster**: k3s on `knode1`–`knode4`; `knode1` is the server/init node.
 - **Ingress**: `kloadbalancer.internal.yomitosh.media` / Traefik.
 - **Storage**: `network-share.internal.yomitosh.media` LXC provides Samba, NFS, FTP, and Time Machine service.

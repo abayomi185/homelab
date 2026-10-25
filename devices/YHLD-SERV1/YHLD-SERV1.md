@@ -12,7 +12,7 @@ tags: ["server", "hypervisor", "proxmox", "amd-epyc"]
 
 | /    |                                 |
 | ---- | ------------------------------- |
-| CPU  | AMD EPYC (1.50 GHz – 3.31 GHz)  |
+| CPU  | AMD EPYC 7532 (1.50 GHz – 3.31 GHz) |
 | Role | Proxmox VE hypervisor           |
 | BMC  | [[../YHLD-IPMI1.md\|YHLD-IPMI1]] |
 
@@ -21,7 +21,6 @@ tags: ["server", "hypervisor", "proxmox", "amd-epyc"]
 | Name | Address | Source |
 | ---- | ------- | ------ |
 | `pve.internal.yomitosh.media` | `10.1.5.12` | Firewall static DNS |
-| `pve-firewall.internal.yomitosh.media` | `10.1.5.11` | Firewall static DNS |
 | `proxmox.*` app route | `https://10.0.7.1:8006` | Traefik dynamic config |
 
 ## CPU Tuning
@@ -39,11 +38,11 @@ Applied at boot via crontab `@reboot` entries (see Notes below).
 
 | VM | Role | Management | Cluster | Config |
 | -- | ---- | ---------- | ------- | ------ |
-| `firewall` | Router / firewall | gateways on all LAN segments | n/a | [`hosts/firewall/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/firewall) |
 | `knode1` | k3s server / init | `10.1.5.71` | `10.0.7.41` | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
 | `knode2` | k3s agent | `10.1.5.72` | `10.0.7.42` | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
 | `knode3` | k3s agent | `10.1.5.73` | `10.0.7.43` | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
-| `knode4` | k3s agent / Intel GPU node | `10.1.5.74` | not configured in flake | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
+
+The `firewall` and `knode4` VMs run on [[../YHLD-SERV2/YHLD-SERV2.md|YHLD-SERV2]] (`pve-firewall`).
 
 ## LXC Containers
 
