@@ -27,7 +27,8 @@ at cluster addresses.
 | Device                                             | Role                   | Stable network facts                                                                                    |
 | -------------------------------------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------- |
 | [[./devices/YHLD-FRWL1.md\|YHLD-FRWL1]]            | NixOS firewall VM      | Hostname `firewall`; LAN gateways; WireGuard `10.13.13.2/32`                                            |
-| [[./devices/YHLD-SERV1/YHLD-SERV1.md\|YHLD-SERV1]] | Proxmox hypervisor     | FQDNs `pve.internal.yomitosh.media`, `pve-firewall.internal.yomitosh.media`; infra subnet `10.1.5.0/24` |
+| [[./devices/YHLD-SERV1/YHLD-SERV1.md\|YHLD-SERV1]] | Proxmox hypervisor     | FQDN `pve.internal.yomitosh.media`; infra subnet `10.1.5.0/24`                                          |
+| [[./devices/YHLD-SERV2/YHLD-SERV2.md\|YHLD-SERV2]] | Proxmox host (firewall) | FQDN `pve-firewall.internal.yomitosh.media`; infra subnet `10.1.5.0/24`; OOB `10.1.99.2`                |
 | [[./devices/YHLD-IPMI1.md\|YHLD-IPMI1]]            | BMC for SERV1          | FQDN `supermicro-ipmi.internal.yomitosh.media`; infra subnet `10.1.5.0/24`                              |
 | [[./devices/YHLD-SWCH1/YHLD-SWCH1.md\|YHLD-SWCH1]] | Core switch            | Hostname `MikroTik_Switch`; main subnet `10.1.10.0/24`                                                  |
 | [[./devices/YHLD-ACPT1/YHLD-ACPT.md\|YHLD-ACPT1]]  | WiFi access point      | Hostname `MikroTik`; main/IoT WLANs                                                                     |
