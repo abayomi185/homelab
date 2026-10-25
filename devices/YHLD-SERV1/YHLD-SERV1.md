@@ -36,11 +36,17 @@ Applied at boot via crontab `@reboot` entries (see Notes below).
 
 ## Virtual Machines
 
-| VM | Role | Management | Cluster | Config |
-| -- | ---- | ---------- | ------- | ------ |
-| `knode1` | k3s server / init | `10.1.5.71` | `10.0.7.41` | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
-| `knode2` | k3s agent | `10.1.5.72` | `10.0.7.42` | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
-| `knode3` | k3s agent | `10.1.5.73` | `10.0.7.43` | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
+| VMID | VM | Role | Management | Cluster | Config |
+| ---- | -- | ---- | ---------- | ------- | ------ |
+| 701 | `knode1` | k3s server / init | `10.1.5.71` | `10.0.7.41` | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
+| 702 | `knode2` | k3s agent | `10.1.5.72` | `10.0.7.42` | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
+| 703 | `knode3` | k3s agent | `10.1.5.73` | `10.0.7.43` | [`hosts/knode/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/knode) |
+| 150 | `PBS` | Proxmox Backup Server | | | |
+| 191 | `gpu-powersave` | GPU power saving | | | |
+| 301 | `sonamesh` | Sonamesh | | | [`hosts/sonamesh/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/sonamesh) |
+
+Stopped / occasional: 101 `Windows`, 102 `HiveOS-NVI`, 103 `HiveOS-CPU`, 106 `Kali`,
+107 `zorin-desktop`, 109 `Ubuntu-desktop`, 112 `ros-vm`.
 
 The `firewall` and `knode4` VMs run on [[../YHLD-SERV2/YHLD-SERV2.md|YHLD-SERV2]] (`pve-firewall`).
 
