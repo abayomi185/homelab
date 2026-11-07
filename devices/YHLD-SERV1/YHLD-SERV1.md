@@ -21,7 +21,6 @@ tags: ["server", "hypervisor", "proxmox", "amd-epyc"]
 | Name | Address | Source |
 | ---- | ------- | ------ |
 | `pve.internal.yomitosh.media` | `10.1.5.12` | Firewall static DNS |
-| `proxmox.*` app route | `https://10.0.7.1:8006` | Traefik dynamic config |
 
 ## CPU Tuning
 
@@ -60,9 +59,6 @@ The `firewall` and `knode4` VMs run on [[../YHLD-SERV2/YHLD-SERV2.md|YHLD-SERV2]
 | 602 | `mysterium-node` | Mysterium node | No | | |
 
 Stopped / occasional: 211 `ros-docker`, 601 `render-farm`.
-
-`kloadbalancer` and `audio-share` have configs in nix-dotfiles but no guest on
-this host or `pve-firewall`, and their DNS names do not resolve (checked 2026-11-07).
 
 `machine-learning.internal.yomitosh.media` has a NixOS config and Home Manager config, but its
 `nixosConfigurations` flake entry is currently commented out because the NVIDIA

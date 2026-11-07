@@ -19,9 +19,7 @@ A two-hypervisor homelab providing:
 - **Hypervisors**: `YHLD-SERV1` (`pve`, main Proxmox VE host) and `YHLD-SERV2` (`pve-firewall`, standalone Proxmox VE host for the firewall, Home Assistant and `knode4`).
 - **Firewall**: `YHLD-FRWL1`, a NixOS VM on `YHLD-SERV2`. It replaced OPNsense.
 - **Cluster**: k3s on `knode1`–`knode4`; `knode1` is the server/init node.
-- **Ingress**: `kloadbalancer.internal.yomitosh.media` / Traefik.
 - **Storage**: `network-share.internal.yomitosh.media` LXC provides Samba, NFS, FTP, and Time Machine service.
-- **Audio**: `l-audio-share.internal.yomitosh.media`.
 - **ML**: `machine-learning.internal.yomitosh.media`; its NixOS flake entry is currently commented out, while Home Manager config remains active.
 
 ## Network Segments
