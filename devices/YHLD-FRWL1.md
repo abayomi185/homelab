@@ -90,7 +90,6 @@ in nftables.
 
 | MAC | Hostname | IP | Segment |
 | --- | -------- | -- | ------- |
-| `bc:24:11:78:dc:ab` | `kloadbalancer` | `10.1.5.40` | Infra |
 | `bc:24:11:24:10:3b` | `knode1` | `10.1.5.71` | Infra |
 | `bc:24:11:34:e2:12` | `knode2` | `10.1.5.72` | Infra |
 | `bc:24:11:3b:26:f1` | `knode3` | `10.1.5.73` | Infra |
