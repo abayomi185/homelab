@@ -28,7 +28,3 @@ tags: ["switch", "networking"]
 
 - **SFP+ ports**: Mac Studio (YHLD-MSDO1), uplink to firewall `sfp0`/`sfp1`
 - **2.5G ports**: Access Point (YHLD-ACPT1), GameBox (YHLD-GMBX1), Proxmox host (YHLD-SERV1)
-
-## Backup
-
-SwitchOS backup stored in [`bkp/`](./bkp/).
