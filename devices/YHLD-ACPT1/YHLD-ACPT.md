@@ -23,7 +23,3 @@ tags: ["ap", "access-point", "networking", "wifi"]
 | Management VLAN | 10 (main)           |
 | WLAN VLANs      | 10 (main), 50 (IoT) |
 | Factory default | `192.168.0.1`       |
-
-## Backup
-
-MikroTik configuration backup stored in [`bkp/`](./bkp/).
