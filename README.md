@@ -9,6 +9,7 @@ repository.
 | Document | Purpose |
 |----------|---------|
 | [CONTEXT.md](./CONTEXT.md) | Core truths, editorial guidance, architecture overview |
+| [RECOVERY.md](./RECOVERY.md) | Recovery order, service dependencies, checklists, and unverified recovery gaps |
 | [NETWORKING.md](./NETWORKING.md) | Network device table and VLAN layout |
 | [POWER.md](./POWER.md) | Power management |
 | [devices/](./devices/) | Per-device notes (YHLD-*) |
