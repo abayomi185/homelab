@@ -13,7 +13,7 @@ tags: ["ipmi", "YHLD-SERV1"]
 | /        |                           |
 | -------- | ------------------------- |
 | Hostname | `supermicro-ipmi.internal.yomitosh.media` |
-| Segment  | Infra / VLAN 5 (`sfp1.5`) |
+| Segment  | Infra (VLAN 5)            |
 
 ## Fan Thresholds
 
