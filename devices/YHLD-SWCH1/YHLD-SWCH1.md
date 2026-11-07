@@ -1,7 +1,7 @@
 ---
 device_name: YHLD-SWCH1
+status: decommissioned # sold
 human_name: YHLD Switch 1
-location: [[../../racks/YHLR-SVRK1.md]]
 subnet: ["10.1.10.0/24"]
 tags: ["switch", "networking"]
 ---
