@@ -52,12 +52,17 @@ The `firewall` and `knode4` VMs run on [[../YHLD-SERV2/YHLD-SERV2.md|YHLD-SERV2]
 
 ## LXC Containers
 
-| Container / flake attr | Runtime hostname | Role | Cluster | Config |
-| ---------------------- | ---------------- | ---- | ------- | ------ |
-| `kloadbalancer` | `kloadbalancer.internal.yomitosh.media` | Traefik ingress | `10.0.7.40` | [`hosts/lxc/load-balancer/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/lxc/load-balancer) |
-| `network-share` | `network-share.internal.yomitosh.media` | NAS (NFS/SMB/FTP), Time Machine, k8s NFS | `10.0.7.202` | [`hosts/lxc/network-share/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/lxc/network-share) |
-| `audio-share` | `l-audio-share.internal.yomitosh.media` | Spotifyd, PipeWire/AirPlay, Scream receiver | `10.0.7.203` | [`hosts/lxc/audio-share/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/lxc/audio-share) |
-| `machine-learning` | `machine-learning.internal.yomitosh.media` | GPU compute / llama-server | `10.0.7.250` | [`hosts/lxc/machine-learning/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/lxc/machine-learning) |
+| CTID | Hostname | Role | Privileged | Cluster | Config |
+| ---- | -------- | ---- | ---------- | ------- | ------ |
+| 202 | `network-share` | NAS (NFS/SMB/FTP), Time Machine, k8s NFS | Yes | `10.0.7.202` | [`hosts/lxc/network-share/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/lxc/network-share) |
+| 250 | `machine-learning` | GPU compute / llama-server | No | `10.0.7.250` | [`hosts/lxc/machine-learning/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/lxc/machine-learning) |
+| 290 | `testbench` | Ubuntu test container | No | | |
+| 602 | `mysterium-node` | Mysterium node | No | | |
+
+Stopped / occasional: 211 `ros-docker`, 601 `render-farm`.
+
+`kloadbalancer` and `audio-share` have configs in nix-dotfiles but no guest on
+this host or `pve-firewall`, and their DNS names do not resolve (checked 2026-11-07).
 
 `machine-learning.internal.yomitosh.media` has a NixOS config and Home Manager config, but its
 `nixosConfigurations` flake entry is currently commented out because the NVIDIA
