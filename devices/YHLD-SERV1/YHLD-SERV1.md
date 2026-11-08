@@ -43,6 +43,7 @@ Applied at boot via crontab `@reboot` entries (see Notes below).
 | 150 | `PBS` | Proxmox Backup Server | | | |
 | 191 | `gpu-powersave` | GPU power saving | | | |
 | 301 | `sonamesh` | Sonamesh | | | [`hosts/sonamesh/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/sonamesh) |
+| 302 | `video-recorder` | MediaMTX camera recorder | `10.1.5.105` | | [`hosts/video-recorder/`](https://github.com/abayomi185/nix-dotfiles/tree/main/hosts/video-recorder) |
 
 Stopped / occasional: 101 `Windows`, 102 `HiveOS-NVI`, 103 `HiveOS-CPU`, 106 `Kali`,
 107 `zorin-desktop`, 109 `Ubuntu-desktop`, 112 `ros-vm`.
