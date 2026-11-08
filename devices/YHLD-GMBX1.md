@@ -13,9 +13,9 @@ tags: ["gaming", "pc", "windows"]
 | /       |                           |
 | ------- | ------------------------- |
 | CPU     | AMD Ryzen 5 5600 (AM4)    |
-| RAM     | 32 GB                     |
+| RAM     | 64 GB                     |
 | Storage | 1 TB SSD                  |
-| GPU     | Nvidia RTX 5060 GPU  |
+| GPU     | AMD Radeon RX-series GPU  |
 
 ## Software
 
