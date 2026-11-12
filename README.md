@@ -19,6 +19,8 @@ docs don't repeat it.
 - **Hypervisors**: `YHLD-SERV1` (`pve`, main Proxmox host) and `YHLD-SERV2` (`pve-firewall`, standalone Proxmox host for the firewall, Home Assistant and `knode4`).
 - **Firewall**: `YHLD-FRWL1`, NixOS VM on `YHLD-SERV2`. Router, DHCP, DNS, WireGuard, UniFi controller. Replaced OPNsense.
 - **Cluster**: k3s on `knode1`–`knode4`; `knode1` is the server/init node.
+- **VPS**: `YHLD-VPSR1`, off-site. WireGuard hub and public k3s ingress.
+- **Audio**: `sonamesh` VM on `YHLD-SERV1` with the `YHLD-UMC1` interface.
 - **Storage**: `network-share` LXC (Samba, NFS, FTP, Time Machine).
 
 ## Repositories

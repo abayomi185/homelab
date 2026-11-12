@@ -56,6 +56,7 @@ live in the controller, not in Nix.
 | [[./devices/YHLD-X2D1.md\|YHLD-X2D1]] | IoT device (IoT) |
 | [[./devices/YHLD-SLZB1.md\|YHLD-SLZB1]] | Zigbee coordinator (IoT) |
 | [[./devices/YHLD-DKFN1.md\|YHLD-DKFN1]] | Desk fan (IoT) |
+| [[./devices/YHLD-VPSR1.md\|YHLD-VPSR1]] | Off-site VPS: WireGuard hub, public k3s ingress |
 
 ## DNS
 
