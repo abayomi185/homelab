@@ -52,8 +52,8 @@ live in the controller, not in Nix.
 | [[./devices/YHLD-MBP14.md\|YHLD-MBP14]] | MacBook Pro 14 (Main) |
 | [[./devices/YHLD-GMBX1.md\|YHLD-GMBX1]] | GameBox gaming PC (Main) |
 | [[./devices/YHLD-WRPT1.md\|YHLD-WRPT1]] | WiFi repeater |
-| [[./devices/YHLD-K1C1.md\|YHLD-K1C1]] | Bambu Lab K1C printer (IoT) |
-| [[./devices/YHLD-X2D1.md\|YHLD-X2D1]] | IoT device (IoT) |
+| [[./devices/YHLD-K1C1.md\|YHLD-K1C1]] | Creality K1C 3D printer (IoT) |
+| [[./devices/YHLD-3DPR1.md\|YHLD-3DPR1]] | Bambu Lab X2D 3D printer (IoT) |
 | [[./devices/YHLD-SLZB1.md\|YHLD-SLZB1]] | Zigbee coordinator (IoT) |
 | [[./devices/YHLD-DKFN1.md\|YHLD-DKFN1]] | Desk fan (IoT) |
 | [[./devices/YHLD-VPSR1.md\|YHLD-VPSR1]] | Off-site VPS: WireGuard hub, public k3s ingress |

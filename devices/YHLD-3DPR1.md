@@ -1,12 +1,18 @@
 ---
-device_name: YHLD-X2D1
-human_name: YHLD X2D 1
+device_name: YHLD-3DPR1
+human_name: YHLD 3D Printer 1
 location: [[../racks/YHLR-SVRK1.md]]
 subnet: ["10.1.50.0/24"]
-tags: ["iot"]
+tags: ["iot", "printer", "3d-printer"]
 ---
 
-# YHLD X2D 1
+# YHLD 3D Printer 1
+
+## Hardware
+
+| / | Value |
+| --- | --- |
+| Model | Bambu Lab X2D |
 
 ## Network
 
