@@ -8,6 +8,12 @@ tags: ["iot", "printer", "3d-printer"]
 
 # YHLD K1C 1
 
+## Hardware
+
+| / | Value |
+| --- | --- |
+| Model | Creality K1C |
+
 ## Network
 
 | / | Value |
