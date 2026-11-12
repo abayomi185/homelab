@@ -10,18 +10,25 @@ tags: ["gaming", "pc", "windows"]
 
 ## Hardware
 
-| /       |                           |
-| ------- | ------------------------- |
-| CPU     | AMD Ryzen 5 5600 (AM4)    |
-| RAM     | 64 GB                     |
-| Storage | 1 TB SSD                  |
-| GPU     | AMD Radeon RX-series GPU  |
+| /           |                                                   |
+| ----------- | ------------------------------------------------- |
+| CPU         | AMD Ryzen 5 5500X3D (AM4)                         |
+| Motherboard | Gigabyte B550I AORUS PRO AX (Mini-ITX)            |
+| RAM         | 32 GB (2 × 16 GB DDR4-3600)                       |
+| Storage     | 1 TB Kingston NV3 NVMe + 250 GB Kingston A2000 NVMe |
+| GPU         | Nvidia GeForce RTX 5060                           |
+| NIC         | Realtek 2.5GbE (wired); Intel AX210 Wi-Fi 6E      |
 
 ## Software
 
 | /   |                |
 | --- | -------------- |
 | OS  | Windows 11 Pro |
+
+## Access
+
+- SSH (OpenSSH for Windows): `yomigames@gamebox.internal.yomitosh.media`
+- Not always online; failed SonaMesh `gamebox` routes are expected.
 
 ## Network
 
