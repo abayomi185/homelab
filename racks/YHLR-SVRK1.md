@@ -17,4 +17,5 @@ tags: ["server-rack", "YHLR", "rack"]
 | [[../devices/YHLD-GMBX1.md\|YHLD-GMBX1]] | Gaming PC | FQDN `GameBox.internal.yomitosh.media` |
 | [[../devices/YHLD-IPMI1.md\|YHLD-IPMI1]] | BMC for SERV1 | FQDN `supermicro-ipmi.internal.yomitosh.media` |
 | [[../devices/YHLD-K1C1.md\|YHLD-K1C1]] | Bambu Lab K1C printer | hostname `k1c` |
+| [[../devices/YHLD-X2D1.md\|YHLD-X2D1]] | IoT device | hostname `x2d` |
 | [[../devices/YHLD-SLZB1.md\|YHLD-SLZB1]] | Zigbee coordinator | hostname `SLZB-MR2` |
