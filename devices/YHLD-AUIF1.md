@@ -1,10 +1,10 @@
 ---
-device_name: YHLD-UMC1
-human_name: YHLD UMC1820 1
+device_name: YHLD-AUIF1
+human_name: YHLD Audio Interface 1
 tags: ["audio", "usb", "sonamesh"]
 ---
 
-# YHLD UMC1820 1
+# YHLD Audio Interface 1
 
 ## Hardware
 
