@@ -19,6 +19,8 @@ docs don't repeat it.
 - **Hypervisors**: `YHLD-SERV1` (`pve`, main Proxmox host) and `YHLD-SERV2` (`pve-firewall`, standalone Proxmox host for the firewall, Home Assistant and `knode4`).
 - **Firewall**: `YHLD-FRWL1`, NixOS VM on `YHLD-SERV2`. Router, DHCP, DNS, WireGuard, UniFi controller. Replaced OPNsense.
 - **Cluster**: k3s on `knode1`–`knode4`; `knode1` is the server/init node.
+- **VPS**: `YHLD-VPSR1`, off-site. WireGuard hub and public k3s ingress.
+- **Audio**: `sonamesh` VM on `YHLD-SERV1` with the `YHLD-AUIF1` interface.
 - **Storage**: `network-share` LXC (Samba, NFS, FTP, Time Machine).
 
 ## Repositories
@@ -31,7 +33,7 @@ docs don't repeat it.
 
 ## Naming
 
-- **YHLR** rack, **YHLD** device. Suffix = role + sequence, e.g. `FRWL1`.
+- **YHLR** rack, **YHLD** device. Suffix = 4-char device type + sequence, e.g. `FRWL1`, `AUIF1`. Use the generic type, not the product name, except in special cases.
 - Kubernetes nodes: `knodeN`. Internal domain: `*.internal.yomitosh.media`.
 - Retired devices keep their doc with `status: decommissioned` in frontmatter.
 
