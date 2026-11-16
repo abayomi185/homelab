@@ -18,3 +18,17 @@ tags: ["server-rack", "YHLR", "rack"]
 | [[../devices/YHLD-IPMI1.md\|YHLD-IPMI1]] | BMC for SERV1 | FQDN `supermicro-ipmi.internal.yomitosh.media` |
 | [[../devices/YHLD-3DPR2.md\|YHLD-3DPR2]] | Bambu Lab X2D 3D printer | hostname `x2d` |
 | [[../devices/YHLD-SLZB1.md\|YHLD-SLZB1]] | Zigbee coordinator | hostname `SLZB-MR2` |
+
+## Space
+
+11U used, **1U free**. Rack sits next to the bed, so new gear must be quiet.
+
+| Units | Occupant |
+| ----- | -------- |
+| 4U | [[../devices/YHLD-SERV1/YHLD-SERV1.md\|YHLD-SERV1]] (no free drive bays) |
+| 3U | [[../devices/YHLD-MSDO1.md\|YHLD-MSDO1]] + [[../devices/YHLD-GMBX1.md\|YHLD-GMBX1]] |
+| 1U | Firewall ([[../devices/YHLD-SERV2/YHLD-SERV2.md\|YHLD-SERV2]]) |
+| 1U | [[../devices/YHLD-SWCH2/YHLD-SWCH2.md\|YHLD-SWCH2]] |
+| 1U | Audio interface ([[../devices/YHLD-AUIF1.md\|YHLD-AUIF1]]) |
+| 1U | Patch panel |
+| 1U | Free |
