@@ -16,7 +16,7 @@ tags: ["server", "hypervisor", "proxmox", "amd-epyc"]
 | Board | Supermicro H11SSL-i (no onboard SAS controller; SATA only) |
 | NIC  | Intel 82599ES (X520) 2× 10G SFP+: one to SWCH2, one free |
 | HBA  | Dell H200E, flashed to LSI 9200-8e P20 IT; 2× SFF-8088 |
-| Chassis | 4U, no free drive bays |
+| Chassis | Sliger CX4150a (4U, 15" deep), no free drive bays |
 | Role | Proxmox VE hypervisor           |
 | BMC  | [[../YHLD-IPMI1.md\|YHLD-IPMI1]] |
 

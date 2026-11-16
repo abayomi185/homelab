@@ -21,7 +21,9 @@ tags: ["server-rack", "YHLR", "rack"]
 
 ## Space
 
-11U used, **1U free**. Rack sits next to the bed, so new gear must be quiet.
+StarTech 4POSTRACK12U open frame (12U, 4-post), set to its shortest depth
+(~22"/560mm mounting depth). 11U used, **1U free**. Rack sits next to the bed,
+so new gear must be quiet.
 
 | Units | Occupant |
 | ----- | -------- |
