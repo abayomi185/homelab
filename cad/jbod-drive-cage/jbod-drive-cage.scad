@@ -48,21 +48,20 @@
 //   F3 rear ear              2.5 mm to the right wall
 //   cable notches            around the SFF and SATA power cables
 //
-// MEASURE before printing:
-//   esp_board                ESP32-C3 board size (SuperMini assumed)
-//
-// Materials: sleds, roofs, fan wall, sleeves, tray: PETG/ASA.
-// grommet, fan_gasket: TPU 95A. No supports needed for any part.
+// Materials: TPU 95A for grommets and fan_gasket; PETG for everything
+// else. No supports. Print sleds upright on their floor, fan wall halves
+// rear face down, roof flat with lips up, grommets flange down.
 //
 // Parts (qty): sled_f1..f3 1 each (pockets differ), sled_f4 1, roof 4,
-//   grommets (plate of 36, 32 needed), sleeves (plate of 36), fanwall_l 1,
-//   fanwall_r 1, fan_gasket 2, esp_tray 1, washers (plate of
-//   4). Export: Makefile.
+//   grommets and sleeves (plates of 36, 32 needed each), fanwall_l 1,
+//   fanwall_r 1, fan_gasket 2, washers (plate of 4). Export: Makefile.
 //
 // Hardware: 32x 6-32 x 3/8" pan head (drives), 4x M3 x 8 (or 6-32 x 5/16")
 // pan head + printed washers (3 fan wall, 1 F4 tab; washer flat towards the
-// fan wall, or towards a fan screw head if it fouls one), 8x fan screws,
-// 6x M3 x 4-6 pan head left proud in old cage holes as locator pins.
+// fan wall, or towards a fan screw head if it fouls one), 2x 80x25 fans +
+// 8x fan screws, 6x M3 x 4-6 pan head left proud in old cage holes as
+// locator pins, foam, foam tape (the ESP32-C3 SuperMini sticks down in the
+// front-left zone).
 //
 // Assembly: grommets into sled walls from outside. Drive in from the front
 // onto a 5 mm shim (on the floor, then on the lower drive). Only then put
@@ -162,7 +161,7 @@ foot_d = fw_y - (rank_y + L + foot_gap);  // reaches over the sled lips
 fan_head_d = 10.6;  // lower fan screw heads sink into the foot
 split_x = 240;
 cable_notch = [[200, 235], 22];  // SFF cables into plenum: x range, height
-sata_notch  = [[165, 195], 22];   // SATA power through plenum left wall: y range
+sata_notch  = [[165, 195], 22];   // SATA power through plenum left wall: y range at the floor
 spoke = [2, 2];   // cable guard bars across the fan holes: width, thickness
 fw_standoffs = [for (s = standoffs)
   if (s[1] > fw_y - foot_d + 3 && s[1] < fw_y - 3) s];
@@ -179,12 +178,6 @@ rib_l = f4_y - (fw_y + fw_t) - 1;                         // to 1 mm off the fan
 win_post = 7;             // half width of solid post around screws
 win_mullion = 3;
 win_max_bridge = 28;
-
-/* [ESP32-C3 tray] */
-esp_board = [18.2, 22.8, 1.0];  // SuperMini w, l, pcb
-esp_wall = 1.6;
-esp_pos = [3, 10];
-esp_hole = floor_holes[0];
 
 $fn = 48;
 eps = 0.01;
@@ -367,8 +360,10 @@ module fanwall_full() {
     // no foot sliver between the cable notch and the split
     translate([cable_notch[0][1] - eps, fw_y - foot_d - 1, standoff_h - eps])
       cube([split_x - cable_notch[0][1] + 2*eps, foot_d + 1, foot_t + 1]);
-    translate([plenum_x0 - 1, sata_notch[0][0], -1])
-      cube([t + 2, sata_notch[0][1] - sata_notch[0][0], sata_notch[1] + 1]);
+    // 45 deg roof on the front side: no overhang when the wall prints flat
+    translate([plenum_x0 - 1, 0, 0]) rotate([90, 0, 90]) linear_extrude(t + 2)
+      polygon([[sata_notch[0][0] - 1, -1], [sata_notch[0][1], -1],
+               [sata_notch[0][1], sata_notch[1]], [sata_notch[0][0] + sata_notch[1], sata_notch[1]]]);
   }
   // cable guards: 3 thin bars across each fan hole, on the bed side
   for (fx = fan_x, i = [-1 : 1])
@@ -398,26 +393,6 @@ module fan_gasket() {
     translate([0, 0, -1]) cylinder(d = fan_d, h = 5, $fn = 96);
     for (i = [-1, 1], j = [-1, 1])
       translate([i * fan_hole/2, j * fan_hole/2, -1]) cylinder(d = 4.6, h = 5);
-  }
-}
-
-// ESP32-C3 SuperMini tray: board drops in, USB-C end open, screws to a floor hole
-module esp_tray() {
-  bw = esp_board[0] + 2*esp_wall + 0.4;
-  bl = esp_board[1] + esp_wall + 0.4;
-  hx = esp_hole[0] - esp_pos[0];
-  hy = esp_hole[1] - esp_pos[1];
-  difference() {
-    union() {
-      cube([max(bw, hx + slot_tol + 4), bl + hy + slot_tol + 4, 2]);
-      translate([0, hy + slot_tol + 4, 0]) cube([bw, bl, 2 + 3]);
-    }
-    // board pocket, open at the +y end for USB-C
-    translate([esp_wall, hy + slot_tol + 4 + esp_wall, 2]) cube([esp_board[0] + 0.4, bl, 10]);
-    // lips over the board edge
-    translate([esp_wall + 1.2, hy + slot_tol + 4 + esp_wall, 2 + esp_board[2] + 0.2 + 1.2])
-      cube([esp_board[0] + 0.4 - 2.4, bl, 10]);
-    translate([hx, hy, -1]) slot_hole(3.4, 10);
   }
 }
 
@@ -471,7 +446,6 @@ module assembly() {
   color("orange") fanwall_r();
   color("black", 0.8) for (fx = fan_x)
     translate([fx, fw_y + fw_t + gasket_t, fan_z0]) cube([fan, fan_t, fan]);
-  color("green") translate([esp_pos[0], esp_pos[1], 0]) esp_tray();
 }
 
 // ---------- output ----------
@@ -496,7 +470,6 @@ else if (part == "sleeves") grid(36, sleeve_d + 4) sleeve();
 else if (part == "fanwall_l") fw_flat() fanwall_l();
 else if (part == "fanwall_r") fw_flat() fanwall_r();
 else if (part == "fan_gasket") fan_gasket();
-else if (part == "esp_tray") esp_tray();
 else if (part == "info") {
   echo(W = W, L = L, rank_x = rank_x, f4_y = f4_y, plenum_x0 = plenum_x0,
        ear_r_last = ear_r_last, sleeve_l = sleeve_l, thread = screw_l - sleeve_l,

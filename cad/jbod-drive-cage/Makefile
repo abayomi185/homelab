@@ -1,7 +1,7 @@
 SCAD = jbod-drive-cage.scad
 OSC = openscad --backend=Manifold
 
-STL = sled_f1 sled_f2 sled_f3 sled_f4 roof fanwall_l fanwall_r fan_gasket esp_tray washers
+STL = sled_f1 sled_f2 sled_f3 sled_f4 roof fanwall_l fanwall_r fan_gasket washers
 PLATES = grommets sleeves
 
 all: $(STL:%=stl/%.stl) $(PLATES:%=stl/%.3mf)
