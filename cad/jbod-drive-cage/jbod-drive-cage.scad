@@ -21,7 +21,10 @@
 //
 // Isolation: drives hang on 4 side screws each (6-32 x 3/8" pan head). Each
 // screw clamps a rigid PETG sleeve to the drive, the sleeve rides in a TPU
-// grommet, the grommet sits in the sled wall. No hard contact drive -> sled.
+// top-hat grommet in the sled wall, and the screw head preloads the grommet
+// flange against the wall. No hard contact drive -> sled. Thread in the
+// drive is screw_l - sleeve_l = 2.9 mm (drive allows ~2.4-3.6). For softer
+// isolation print the grommets at low infill, or in 85A.
 //
 // Location: sleds sit on the floor with pockets over the 5 mm ATX standoffs
 // and over screws left proud in the old cage holes (front pins; a pocket
@@ -61,8 +64,10 @@
 // fan wall, or towards a fan screw head if it fouls one), 8x fan screws,
 // 6x M3 x 4-6 pan head left proud in old cage holes as locator pins.
 //
-// Assembly: grommets into sled walls from outside, sleeve into each grommet,
-// drive in from the front, screw. Roof in from the front. Fans onto the fan
+// Assembly: grommets into sled walls from outside. Drive in from the front
+// onto a 5 mm shim (on the floor, then on the lower drive). Only then put
+// each sleeve on its screw and start it through the grommet: sleeves fitted
+// earlier fall out. Pull the shim. Roof in from the front. Fans onto the fan
 // wall on the bench. Drop F1-F3 onto their pins, then the fan wall (foot on
 // the lips, screw to standoffs), then F4 (screw the tab), then cables.
 
@@ -124,13 +129,13 @@ screw_z = [z_d1 + drv_screw_z, z_d2 + drv_screw_z];
 grom_hole = 9.2;
 grom_core = 9;
 grom_fl   = 13;
-grom_out  = 1.6;   // outer flange (under screw head)
-grom_in   = 2.2;   // inner flange, < gap_side
+grom_out  = 1.4;   // flange (under screw head)
 grom_bore = 5.3;
 sleeve_d  = 5;
 sleeve_id = 3.7;   // 6-32
 preload   = 0.3;
-sleeve_l  = gap_side + t + grom_out - preload;  // 6.8; 3/8" screw -> 2.7 mm thread
+screw_l   = 9.525; // 6-32 x 3/8"
+sleeve_l  = gap_side + t + grom_out - preload;  // 6.6 -> 2.9 mm thread in the drive
 
 /* [Placement] */
 front_gap = 5;
@@ -298,19 +303,14 @@ module roof() {
     translate([(rw - lip_w) / 2, y, 0]) cube([lip_w, band, top - roof_z0 - 0.3]);
 }
 
-// printed outer flange down; inner flange is a 45 deg cone, pushed through from outside
+// top hat: printed flange down, pushed into the wall from outside
 module grommet() {
   difference() {
     union() {
       cylinder(d = grom_fl, h = grom_out);
       cylinder(d = grom_core, h = grom_out + t);
-      translate([0, 0, grom_out + t]) {
-        cylinder(d1 = grom_core, d2 = grom_fl, h = (grom_fl - grom_core) / 2);
-        translate([0, 0, (grom_fl - grom_core) / 2 - eps])
-          cylinder(d = grom_fl, h = grom_in - (grom_fl - grom_core) / 2 + eps);
-      }
     }
-    translate([0, 0, -1]) cylinder(d = grom_bore, h = 20);
+    translate([0, 0, -1]) cylinder(d = grom_bore, h = grom_out + t + 2);
   }
 }
 
@@ -499,7 +499,7 @@ else if (part == "fan_gasket") fan_gasket();
 else if (part == "esp_tray") esp_tray();
 else if (part == "info") {
   echo(W = W, L = L, rank_x = rank_x, f4_y = f4_y, plenum_x0 = plenum_x0,
-       ear_r_last = ear_r_last, sleeve_l = sleeve_l,
+       ear_r_last = ear_r_last, sleeve_l = sleeve_l, thread = screw_l - sleeve_l,
        f1 = pockets_rank(rank_x[0], rank_y), f2 = pockets_rank(rank_x[1], rank_y),
        f3 = pockets_rank(rank_x[2], rank_y), f4 = pockets_f4(),
        fw_standoffs = fw_standoffs, roof_z1 = roof_z1, screw_y = screw_y,
