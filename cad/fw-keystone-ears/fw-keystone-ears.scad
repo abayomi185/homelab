@@ -9,10 +9,7 @@
 //   y: 0 = front face, + towards the rear
 //   z: 0 = bottom of the panel
 //
-// MEASURE before printing (defaults are photo estimates):
-//   fw_w                    firewall chassis width
-//   right_free              chassis side -> inner edge of right rack rail
-//                           (left_free follows from the 450mm rail opening)
+// MEASURE before printing (still estimates):
 //   side_slot_z             heights of the chassis side screw holes
 //   side_slot_y             depth range (from the ear face) the holes fall in
 //   side_screw_d            clearance for the original ear screws
@@ -25,8 +22,8 @@
 part = "assembly";
 
 /* [Fit: measure these] */
-fw_w       = 244;   // firewall chassis width, photo estimate
-right_free = 110;   // chassis side -> right rail inner edge
+fw_w       = 240;   // firewall chassis width (vendor drawing: 240 x 184 x 43)
+right_free = 105;   // chassis side -> right rail inner edge; stock ears are 120 wide
 left_free  = 450 - fw_w - right_free;
 side_slot_z = [11.8, 31.8];  // chassis side screw heights
 side_slot_y = [12, 58];      // slot start/end depth from front face
