@@ -73,7 +73,7 @@ floor_holes = [          // old cage holes; drop a screw in to use as a pin
 
 /* [Drive: ST4000NM0034 / SFF-8301] */
 drv = [101.85, 147, 26.11];   // w, l, h (datasheet max)
-drv_screw_l = [28.5, 130.1];  // side holes from drive front
+drv_screw_l = [28.5, 130.1];  // side holes from the CONNECTOR end (A8, A8 + A9)
 drv_screw_z = 6.35;           // side hole height from drive bottom
 
 /* [Sled] */
@@ -96,7 +96,7 @@ z_d1 = floor_h + air;
 z_d2 = z_d1 + drv[2] + air;
 roof_z0 = z_d2 + drv[2] + air;
 roof_z1 = roof_z0 + roof_t;
-screw_y = [for (s = drv_screw_l) d_off + s];
+screw_y = [for (s = drv_screw_l) d_off + drv[1] - s];  // connector at the rear
 screw_z = [z_d1 + drv_screw_z, z_d2 + drv_screw_z];
 
 /* [Isolation] */
@@ -195,8 +195,9 @@ function pockets_f4() = [for (p = concat(standoffs, floor_holes))
 
 // window segments along the sled length, split by posts and mullions
 function win_spans() =
-  let (edges = [band + 1, screw_y[0] - win_post, screw_y[0] + win_post,
-                screw_y[1] - win_post, screw_y[1] + win_post, L - band - 1])
+  let (a = min(screw_y), b = max(screw_y),
+       edges = [band + 1, a - win_post, a + win_post,
+                b - win_post, b + win_post, L - band - 1])
   [for (i = [0 : 2 : 4]) [edges[i], edges[i + 1]]];
 
 module windows() {
