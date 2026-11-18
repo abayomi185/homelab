@@ -39,7 +39,7 @@ rack_slot = [10, 6.6];        // M6 cage nut slot, w x h
 /* [Keystone] */
 ks_w      = 15.0;  // front opening
 ks_h      = 16.5;
-ks_pitch  = 17.0;
+ks_pitch  = 16.5;  // 1.5mm web; 12 ports in the right ear
 clip_t    = 2.0;   // plate thickness the keystone clips grip
 latch_h   = 23.5;  // rear clearance for hook + latch
 
