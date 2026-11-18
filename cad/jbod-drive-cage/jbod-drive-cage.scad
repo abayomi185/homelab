@@ -24,9 +24,11 @@
 // (and over screw heads left proud in the old cage holes). The lid stops
 // them lifting (0.5 mm clearance). The fan wall screws into 3 standoffs.
 //
-// MEASURE before printing (photo estimates, +-5 mm):
-//   standoffs, floor_holes   x/y of each, from left wall / front panel
-//   D_int                    you measured ~380, the photo says ~365
+// Standoff and cage hole positions are photo estimates. Every pocket and
+// screw hole on them is a slot +-slot_tol in x and y instead of measuring.
+// Cage holes are threaded M3; standoffs assumed M3.
+//
+// MEASURE before printing:
 //   slot_cover_*             against a stock low-profile cover
 //   esp_board                ESP32-C3 board size (SuperMini assumed)
 //
@@ -35,11 +37,13 @@
 //
 // Parts (qty): sled_f1..f3 1 each (pockets differ), sled_f4 1, roof 4,
 //   grommets (plate of 36, 32 needed), sleeves (plate of 36), fanwall_l 1,
-//   fanwall_r 1, fan_gasket 2, slot_cover 2, esp_tray 1. Export: Makefile.
+//   fanwall_r 1, fan_gasket 2, slot_cover 2, esp_tray 1, washers (plate of
+//   4). Export: Makefile.
 //
-// Hardware: 32x 6-32 x 3/8" pan head (drives), 3x M3/6-32 (fan wall to
-// standoffs), 8x fan screws, optional M3/6-32 pan heads left proud in old
-// cage holes as locator pins. Seal cable notches with foam.
+// Hardware: 32x 6-32 x 3/8" pan head (drives), 4x M3 x 8 pan head + printed
+// washers (fan wall to standoffs, ESP32 tray to cage hole), 8x fan screws,
+// 6x M3 x 4-6 pan head left proud in old cage holes as locator pins. Seal
+// cable notches with foam.
 //
 // Assembly: grommets into sled walls from outside, sleeve into each grommet,
 // drive in from the front, screw. Roof in from the front. Drop sleds onto
@@ -49,14 +53,15 @@ part = "assembly";
 
 /* [Chassis: measured] */
 W_int = 423;    // measured ~423
-D_int = 380;    // measured ~380 (photo ~365: check!)
+D_int = 365;    // inside the front panel fold to rear wall
 H_int = 86.5;   // measured
 lid_clr = 0.5;
 top = H_int - lid_clr;
 psu = [150, 140, 86];
 psu_x = 6;
 
-/* [Chassis: MEASURE] */
+/* [Chassis: photo estimates] */
+slot_tol = 3.5;   // +- slack in x and y on every pocket/hole below
 standoff_h = 5;
 standoffs = [            // ATX pattern, read off the photo
   [251, 128], [407, 128],
@@ -127,7 +132,7 @@ fw_y = 205;       // front face; standoffs at y~198 sit under the foot
 fw_t = 4;
 foot_d = 15;
 split_x = 240;
-cable_notch = [[165, 215], 22];   // SFF cables into plenum: x range, height
+cable_notch = [[200, 235], 22];  // SFF cables into plenum: x range, height
 sata_notch  = [[165, 195], 22];   // SATA power through plenum left wall: y range
 fw_standoffs = [for (s = standoffs)
   if (s[1] > fw_y - foot_d + 3 && s[1] < fw_y - 3) s];
@@ -168,6 +173,12 @@ module hole_x(d, l) {
       hull() { circle(r); rotate(45) square(r); }
       translate([-r, -r]) square([2*r, 2.2*r]);
     }
+}
+
+// hole with +-slot_tol slack in x and y
+module slot_hole(d, h) {
+  hull() for (i = [-1, 1], j = [-1, 1])
+    translate([i * slot_tol, j * slot_tol, 0]) cylinder(d = d, h = h);
 }
 
 function in_rect(p, x0, y0, x1, y1, m) =
@@ -215,7 +226,7 @@ module sled(win = false, ear_l = 0, ear_r = 0, pockets = []) {
       translate([x, -1, roof_z0 - 0.2]) cube([groove, L - band + 1, roof_t + 0.4]);
     for (y = screw_y, z = screw_z) translate([W/2, y, z]) hole_x(grom_hole, W + 2);
     if (win) windows();
-    for (p = pockets) translate([p[0], p[1], -1]) cylinder(d = pocket_d, h = pocket_h + 1);
+    for (p = pockets) translate([p[0], p[1], -1]) slot_hole(pocket_d, pocket_h + 1);
   }
 }
 
@@ -283,7 +294,7 @@ module fanwall_full() {
         cube([t, fw_y - (rank_y + L - band) + eps, top]);
     }
     translate([0, fw_y, 0]) fan_holes();
-    for (s = fw_standoffs) translate([s[0], s[1], 0]) cylinder(d = 3.6, h = 20);
+    for (s = fw_standoffs) translate([s[0], s[1], 0]) slot_hole(3.4, 20);
     translate([cable_notch[0][0], fw_y - foot_d - 1, -1])
       cube([cable_notch[0][1] - cable_notch[0][0], foot_d + fw_t + 2, cable_notch[1] + 1]);
     translate([plenum_x0 - 1, sata_notch[0][0], -1])
@@ -343,15 +354,23 @@ module esp_tray() {
   hy = esp_hole[1] - esp_pos[1];
   difference() {
     union() {
-      translate([0, 0, 0]) cube([max(bw, hx + 6), bl + hy + 6, 2]);
-      translate([0, hy + 6, 0]) cube([bw, bl, 2 + 3]);
+      cube([max(bw, hx + slot_tol + 4), bl + hy + slot_tol + 4, 2]);
+      translate([0, hy + slot_tol + 4, 0]) cube([bw, bl, 2 + 3]);
     }
     // board pocket, open at the +y end for USB-C
-    translate([esp_wall, hy + 6 + esp_wall, 2]) cube([esp_board[0] + 0.4, bl, 10]);
+    translate([esp_wall, hy + slot_tol + 4 + esp_wall, 2]) cube([esp_board[0] + 0.4, bl, 10]);
     // lips over the board edge
-    translate([esp_wall + 1.2, hy + 6 + esp_wall, 2 + esp_board[2] + 0.2 + 1.2])
+    translate([esp_wall + 1.2, hy + slot_tol + 4 + esp_wall, 2 + esp_board[2] + 0.2 + 1.2])
       cube([esp_board[0] + 0.4 - 2.4, bl, 10]);
-    translate([hx, hy, -1]) cylinder(d = 3.6, h = 10);
+    translate([hx, hy, -1]) slot_hole(3.4, 10);
+  }
+}
+
+// spreads an M3 head over a slot
+module washer() {
+  difference() {
+    cylinder(d = 2*slot_tol + 3.4 + 5, h = 2);
+    translate([0, 0, -1]) cylinder(d = 3.4, h = 4);
   }
 }
 
@@ -414,6 +433,7 @@ else if (part == "sled_f3") sled(false, ear, ear_r_last, pockets_rank(rank_x[2],
 else if (part == "sled_f4") sled(true, pockets = pockets_f4());
 else if (part == "roof") roof();
 else if (part == "grommets") grid(36, grom_fl + 3) grommet();
+else if (part == "washers") grid(4, 2*slot_tol + 3.4 + 8) washer();
 else if (part == "sleeves") grid(36, sleeve_d + 4) sleeve();
 else if (part == "fanwall_l") fw_flat() fanwall_l();
 else if (part == "fanwall_r") fw_flat() fanwall_r();
