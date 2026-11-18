@@ -21,12 +21,19 @@
 // grommet, the grommet sits in the sled wall. No hard contact drive -> sled.
 //
 // Location: sleds sit on the floor with pockets over the 5 mm ATX standoffs
-// (and over screw heads left proud in the old cage holes). The lid stops
-// them lifting (0.5 mm clearance). The fan wall screws into 3 standoffs.
+// and over screws left proud in the old cage holes (front pins; a pocket
+// next to a side wall runs out through it). The fan-wall foot sits on the
+// rear lips of F1-F3, so its 3 screws into the y~198 standoffs clamp all
+// three. F4 has a slotted floor tab on the standoff near (251, 351): one
+// screw and washer, reachable from above before cabling. The lid (0.5 mm
+// clearance) is the backstop.
 //
 // Standoff and cage hole positions are photo estimates. Every pocket and
-// screw hole on them is a slot +-slot_tol in x and y instead of measuring.
-// Cage holes are threaded M3; standoffs assumed M3.
+// screw hole on them is a slot +-slot_tol in x and y instead of measuring;
+// the lip/foot overlap allows the same. Cage holes are threaded M3;
+// standoffs are M3 or 6-32: the slots clear both, use the matching screw.
+// Remove any screws already in the standoffs (taller than pocket_h).
+// F3's rear ear stops 2.5 mm short of the right wall: close it with foam.
 //
 // MEASURE before printing:
 //   slot_cover_*             against a stock low-profile cover
@@ -40,14 +47,16 @@
 //   fanwall_r 1, fan_gasket 2, slot_cover 2, esp_tray 1, washers (plate of
 //   4). Export: Makefile.
 //
-// Hardware: 32x 6-32 x 3/8" pan head (drives), 4x M3 x 8 pan head + printed
-// washers (fan wall to standoffs, ESP32 tray to cage hole), 8x fan screws,
+// Hardware: 32x 6-32 x 3/8" pan head (drives), 4x M3 x 8 (or 6-32 x 5/16")
+// pan head + printed washers (3 fan wall, 1 F4 tab; washer flat towards the
+// fan wall, or towards a fan screw head if it fouls one), 8x fan screws,
 // 6x M3 x 4-6 pan head left proud in old cage holes as locator pins. Seal
 // cable notches with foam.
 //
 // Assembly: grommets into sled walls from outside, sleeve into each grommet,
-// drive in from the front, screw. Roof in from the front. Drop sleds onto
-// their pins; fan wall last (screw foot to standoffs), then cables.
+// drive in from the front, screw. Roof in from the front. Fans onto the fan
+// wall on the bench. Drop F1-F3 onto their pins, then the fan wall (foot on
+// the lips, screw to standoffs), then F4 (screw the tab), then cables.
 
 part = "assembly";
 
@@ -88,6 +97,10 @@ d_off    = 1;     // drive front from sled front
 pocket_d = 8.5;
 pocket_h = standoff_h + 0.5;
 head_prot = 4;    // screw head + grommet flange beyond the wall
+lip_l    = 12;    // F1-F3 rear floor lip, under the fan-wall foot
+screw_d  = 4;     // mount screw slots: clears M3 and 6-32
+washer_d = 2*slot_tol + screw_d + 5;
+washer_flat = 3.2;  // flat side, clears the fan wall
 sled_gap = 9;     // between sleds (2x head_prot + 1)
 
 W = drv[0] + 2*gap_side + 2*t;   // 112.85
@@ -117,7 +130,7 @@ rank_y = front_gap;
 f3_x = W_int - 1 - head_prot - W;
 rank_x = [f3_x - 2*(W + sled_gap), f3_x - (W + sled_gap), f3_x];
 ear = sled_gap / 2;
-ear_r_last = W_int - lid_clr - (f3_x + W);
+ear_r_last = W_int - lid_clr - (f3_x + W) - 2;  // 2 mm width slack: foam
 plenum_x0 = rank_x[0] - ear - t;   // plenum left wall outer face
 
 /* [Fan wall] */
@@ -130,7 +143,10 @@ fan_z0 = top - fan;
 gasket_t = 1.5;
 fw_y = 205;       // front face; standoffs at y~198 sit under the foot
 fw_t = 4;
-foot_d = 15;
+foot_t = 3;
+foot_gap = 4;     // foot front to sled rears, > slot_tol
+foot_d = fw_y - (rank_y + L + foot_gap);  // reaches over the sled lips
+fan_head_d = 10.6;  // lower fan screw heads sink into the foot
 split_x = 240;
 cable_notch = [[200, 235], 22];  // SFF cables into plenum: x range, height
 sata_notch  = [[165, 195], 22];   // SATA power through plenum left wall: y range
@@ -141,6 +157,8 @@ fw_standoffs = [for (s = standoffs)
 fan_rear = fw_y + fw_t + gasket_t + fan_t;
 f4_front_x = W_int - 4;   // drive front end (right)
 f4_y = fan_rear + (D_int - fan_rear - (W + 2*head_prot)) / 2 + head_prot;
+f4_tab = [351 - f4_y, f4_front_x - 251];  // standoff past the connector end, sled coords
+tab_h = standoff_h + foot_t;
 win_post = 7;             // half width of solid post around screws
 win_mullion = 3;
 win_max_bridge = 28;
@@ -181,16 +199,41 @@ module slot_hole(d, h) {
     translate([i * slot_tol, j * slot_tol, 0]) cylinder(d = d, h = h);
 }
 
-function in_rect(p, x0, y0, x1, y1, m) =
-  p[0] > x0 + m && p[0] < x1 - m && p[1] > y0 + m && p[1] < y1 - m;
+pocket_r = pocket_d/2 + slot_tol;   // pocket reach from its point
+pocket_skin = 1.5;                  // least material left beside a pocket
+
+// locator pocket; next to a side wall it runs out through the wall instead
+// of leaving a thin skin (the six cage-hole pins all sit there)
+module pocket(p) {
+  hull() for (x = [p[0], if (p[0] < pocket_r + pocket_skin) -pocket_r,
+                   if (p[0] > W - pocket_r - pocket_skin) W + pocket_r])
+    translate([x, p[1], -1]) slot_hole(pocket_d, pocket_h + 1);
+}
+
+// pocket over a standoff with a slotted screw hole above it. The 45 deg
+// roof prints without a bridge
+module screw_pocket() {
+  translate([0, 0, -1]) slot_hole(pocket_d, standoff_h + 1);
+  hull() for (i = [-1, 1], j = [-1, 1])
+    translate([i * slot_tol, j * slot_tol, standoff_h - eps])
+      cylinder(d1 = pocket_d, d2 = screw_d, h = (pocket_d - screw_d) / 2);
+  slot_hole(screw_d, 20);
+}
+
+// mx, my: margins. Sled sides get pocket_ms (pockets may run out there),
+// sled ends pocket_me
+function in_rect(p, x0, y0, x1, y1, mx, my) =
+  p[0] > x0 + mx && p[0] < x1 - mx && p[1] > y0 + my && p[1] < y1 - my;
+pocket_ms = pocket_d/2;
+pocket_me = pocket_r + pocket_skin;
 
 // locator points under a sled at chassis (x0, y0), unrotated
 function pockets_rank(x0, y0) = [for (p = concat(standoffs, floor_holes))
-  if (in_rect(p, x0, y0, x0 + W, y0 + L, pocket_d/2 + 1)) [p[0] - x0, p[1] - y0]];
+  if (in_rect(p, x0, y0, x0 + W, y0 + L, pocket_ms, pocket_me)) [p[0] - x0, p[1] - y0]];
 
 // F4: local (lx, ly) -> chassis (f4_front_x - ly, f4_y + lx)
 function pockets_f4() = [for (p = concat(standoffs, floor_holes))
-  if (in_rect(p, f4_front_x - L, f4_y, f4_front_x, f4_y + W, pocket_d/2 + 1))
+  if (in_rect(p, f4_front_x - L, f4_y, f4_front_x, f4_y + W, pocket_me, pocket_ms))
     [p[1] - f4_y, f4_front_x - p[0]]];
 
 // window segments along the sled length, split by posts and mullions
@@ -221,13 +264,18 @@ module sled(win = false, ear_l = 0, ear_r = 0, pockets = []) {
       if (!win) {   // rear collar ears close the gaps to neighbours
         translate([-ear_l, L - band, 0]) cube([ear_l + eps, band, top]);
         translate([W - eps, L - band, 0]) cube([ear_r + eps, band, top]);
-      }
+        // rear lip: the fan-wall foot clamps it to the floor
+        translate([0, L - eps, 0]) cube([W, lip_l + eps, standoff_h]);
+      } else   // F4 floor tab onto its standoff
+        translate([f4_tab[0] - pocket_r - 2, L - eps, 0])
+          cube([2*pocket_r + 4, f4_tab[1] + pocket_r + 2 - L + eps, tab_h]);
     }
     for (x = [t - groove, W - t])
       translate([x, -1, roof_z0 - 0.2]) cube([groove, L - band + 1, roof_t + 0.4]);
     for (y = screw_y, z = screw_z) translate([W/2, y, z]) hole_x(grom_hole, W + 2);
     if (win) windows();
-    for (p = pockets) translate([p[0], p[1], -1]) slot_hole(pocket_d, pocket_h + 1);
+    for (p = pockets) pocket(p);
+    if (win) translate([f4_tab[0], f4_tab[1], 0]) screw_pocket();
   }
 }
 
@@ -289,15 +337,28 @@ module fanwall_full() {
       translate([plenum_x0, fw_y, 0]) cube([W_int - lid_clr - plenum_x0, fw_t, top]);
       // foot on the standoffs
       translate([plenum_x0, fw_y - foot_d, standoff_h])
-        cube([W_int - lid_clr - plenum_x0, foot_d + eps, 3]);
+        cube([W_int - lid_clr - plenum_x0, foot_d + eps, foot_t]);
       // plenum left wall, overlaps F1's collar ear
       translate([plenum_x0, rank_y + L - band, 0])
         cube([t, fw_y - (rank_y + L - band) + eps, top]);
     }
     translate([0, fw_y, 0]) fan_holes();
-    for (s = fw_standoffs) translate([s[0], s[1], 0]) slot_hole(3.4, 20);
+    for (s = fw_standoffs) {
+      translate([s[0], s[1], 0]) slot_hole(screw_d, 20);
+      // wall base clears a standoff that sits further back than estimated
+      translate([s[0] - slot_tol - 4, fw_y - eps, -1]) cube([2*slot_tol + 8, 2 + eps, pocket_h + 1]);
+    }
+    // lower fan screws: head pocket in the foot, driver groove along it
+    for (fx = fan_x, i = [-1, 1])
+      translate([fx + fan/2 + i * fan_hole/2, fw_y, fan_z0 + (fan - fan_hole)/2]) rotate([90, 0, 0]) {
+        cylinder(d = fan_head_d, h = 8);
+        cylinder(d = 7.5, h = foot_d + 1);
+      }
     translate([cable_notch[0][0], fw_y - foot_d - 1, -1])
       cube([cable_notch[0][1] - cable_notch[0][0], foot_d + fw_t + 2, cable_notch[1] + 1]);
+    // no foot sliver between the cable notch and the split
+    translate([cable_notch[0][1] - eps, fw_y - foot_d - 1, standoff_h - eps])
+      cube([split_x - cable_notch[0][1] + 2*eps, foot_d + 1, foot_t + 1]);
     translate([plenum_x0 - 1, sata_notch[0][0], -1])
       cube([t + 2, sata_notch[0][1] - sata_notch[0][0], sata_notch[1] + 1]);
   }
@@ -367,11 +428,14 @@ module esp_tray() {
   }
 }
 
-// spreads an M3 head over a slot
+// spreads a screw head over a slot; the flat clears the fan wall
 module washer() {
   difference() {
-    cylinder(d = 2*slot_tol + 3.4 + 5, h = 2);
-    translate([0, 0, -1]) cylinder(d = 3.4, h = 4);
+    intersection() {
+      cylinder(d = washer_d, h = 2);
+      translate([-washer_d, -washer_d, 0]) cube([2*washer_d, washer_d + washer_flat, 2]);
+    }
+    translate([0, 0, -1]) cylinder(d = screw_d, h = 4);
   }
 }
 
@@ -434,7 +498,7 @@ else if (part == "sled_f3") sled(false, ear, ear_r_last, pockets_rank(rank_x[2],
 else if (part == "sled_f4") sled(true, pockets = pockets_f4());
 else if (part == "roof") roof();
 else if (part == "grommets") grid(36, grom_fl + 3) grommet();
-else if (part == "washers") grid(4, 2*slot_tol + 3.4 + 8) washer();
+else if (part == "washers") grid(4, washer_d + 3) washer();
 else if (part == "sleeves") grid(36, sleeve_d + 4) sleeve();
 else if (part == "fanwall_l") fw_flat() fanwall_l();
 else if (part == "fanwall_r") fw_flat() fanwall_r();
@@ -446,6 +510,9 @@ else if (part == "info") {
        ear_r_last = ear_r_last, sleeve_l = sleeve_l,
        f1 = pockets_rank(rank_x[0], rank_y), f2 = pockets_rank(rank_x[1], rank_y),
        f3 = pockets_rank(rank_x[2], rank_y), f4 = pockets_f4(),
-       fw_standoffs = fw_standoffs, roof_z1 = roof_z1);
+       fw_standoffs = fw_standoffs, roof_z1 = roof_z1, screw_y = screw_y,
+       foot_d = foot_d, f4_tab = f4_tab,
+       f4_gap_front = f4_y - fan_rear, f4_gap_rear = D_int - f4_y - W,
+       f4_gap_right = W_int - f4_front_x);
   cube(1);
 }
