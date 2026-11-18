@@ -9,10 +9,10 @@
 //   y: 0 = front face, + towards the rear
 //   z: 0 = bottom of the panel
 //
-// MEASURE before printing (still estimates):
-//   side_slot_z             heights of the chassis side screw holes
-//   side_slot_y             depth range (from the ear face) the holes fall in
-//   side_screw_d            clearance for the original ear screws
+// Chassis side holes (measured): 2x M3 per side, 22mm apart centred on the
+// chassis height, 5mm behind the chassis front. The chassis sits fw_recess
+// behind the ear face so the screws clear the 4mm face; countersunk M3 heads
+// sit flush in the flange, clear of the keystones.
 //
 // Assembly: screw ears to the firewall on the desk (driver goes in from the
 // open outer side), rack it, then snap keystones in from the rear.
@@ -24,9 +24,12 @@ part = "assembly";
 
 /* [Fit] */
 fw_w = 240;                  // firewall chassis (vendor drawing: 240 x 184 x 43)
-side_slot_z = [11.8, 31.8];  // chassis side screw heights: measure
-side_slot_y = [12, 58];      // slot start/end depth from front face
-side_screw_d = 4.4;          // M4 clearance (3.4 for M3)
+fw_recess = 2;               // chassis front behind ear face
+side_hole_pitch = 22;        // vertical, centred
+side_hole_y = fw_recess + 5; // from ear face
+side_slot_len = 2;           // extra fore/aft play
+side_screw_d = 3.6;          // M3 clearance
+csk_d = 6.4;                 // M3 countersunk head (DIN 7991: 6.0)
 
 /* [Rack: EIA-310] */
 panel_h  = 43.66;             // 1U minus 1/32"
@@ -82,12 +85,17 @@ module rack_slots(w) {
                 slot(rack_slot[0], rack_slot[1]);
 }
 
+// countersunk M3 slots through a flange of thickness t, head on the +x side
 module side_slots(t) {
-    for (z = side_slot_z)
-        translate([-eps, (side_slot_y[0] + side_slot_y[1]) / 2, z])
-            rotate([0, 90, 0]) rotate([0, 0, 90])
-                linear_extrude(t + 2 * eps)
-                    slot(side_slot_y[1] - side_slot_y[0], side_screw_d);
+    csk_h = (csk_d - side_screw_d) / 2; // 90 deg
+    for (s = [-1, 1])
+        translate([0, side_hole_y, panel_h / 2 + s * side_hole_pitch / 2])
+            hull() for (dy = [-1, 1] * side_slot_len / 2)
+                translate([0, dy, 0]) rotate([0, 90, 0]) {
+                    translate([0, 0, -eps]) cylinder(d = side_screw_d, h = t + 2 * eps);
+                    translate([0, 0, t - csk_h])
+                        cylinder(d1 = side_screw_d, d2 = csk_d, h = csk_h + eps);
+                }
 }
 
 module right() {
@@ -150,5 +158,5 @@ if (part == "assembly") {
     x0 = -225 + left_free; // firewall left side
     translate([x0, 0, 0]) left();
     translate([x0 + fw_w, 0, 0]) right();
-    %translate([x0, 2, 1]) cube([fw_w, 184, panel_h - 2]);
+    %translate([x0, fw_recess, (panel_h - 43) / 2]) cube([fw_w, 184, 43]);
 }
