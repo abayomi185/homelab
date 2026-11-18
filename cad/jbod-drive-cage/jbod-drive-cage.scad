@@ -42,7 +42,6 @@
 //
 // Foam (airflow only goes where it should once these are closed):
 //   F4 right end             between the tube end and the right wall
-//   F4 rib end               to the fan wall's rear face, if it gaps
 //   PSU front                block to the fan wall's left end, or exhaust
 //                            loops out the open front-left bay into F1
 //   F3 rear ear              2.5 mm to the right wall
@@ -174,7 +173,7 @@ f4_tab = [351 - f4_y, f4_front_x - 251];  // standoff past the connector end, sl
 tab_h = standoff_h + foot_t;
 rib_t = 2.4;              // rib between the fans (4 mm apart), on F4's front wall
 rib_ly = f4_front_x - (fan_x[0] + fan + fan_x[1]) / 2;   // along the sled
-rib_l = f4_y - (fw_y + fw_t) - 1;                         // to 1 mm off the fan wall
+rib_l = f4_y - (fw_y + fw_t) - slot_tol - 0.5;            // ends between the fan frames
 win_post = 7;             // half width of solid post around screws
 win_mullion = 3;
 win_max_bridge = 28;
@@ -347,7 +346,7 @@ module fanwall_full() {
     for (s = fw_standoffs) {
       translate([s[0], s[1], 0]) slot_hole(screw_d, 20);
       // wall base clears a standoff that sits further back than estimated
-      translate([s[0] - slot_tol - 4, fw_y - eps, -1]) cube([2*slot_tol + 8, 2 + eps, pocket_h + 1]);
+      translate([s[0] - slot_tol - 4, fw_y - eps, -1]) cube([2*slot_tol + 8, 2 + eps, standoff_h + 1]);
     }
     // lower fan screws: head pocket in the foot, driver groove along it
     for (fx = fan_x, i = [-1, 1])
