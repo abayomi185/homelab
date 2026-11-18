@@ -2,8 +2,11 @@
 //
 // Layout A: F1-F3 sit side by side at the front, drives front-to-back. Their
 // rear ends open into a plenum. A printed fan wall behind the plenum pulls air
-// through the 5 mm drive gaps and pushes it through F4, a windowed sled turned
-// sideways at the rear right, then out the rear vents.
+// through the 5 mm drive gaps. A rib on F4 between the two fans makes the
+// right fan feed only F4, a windowed sled turned sideways at the rear right;
+// the left fan exhausts freely. Air leaves through the rear vents and the
+// three low-profile PCIe slots, left open (the SFF-8088 cables pass through
+// them). CHECK the rear vent open area is enough for two 80 mm fans.
 //
 //   rear +--------------+--------+--------------------+
 //        | PSU          | SFF in |  F4 (windowed)     |
@@ -33,25 +36,30 @@
 // the lip/foot overlap allows the same. Cage holes are threaded M3;
 // standoffs are M3 or 6-32: the slots clear both, use the matching screw.
 // Remove any screws already in the standoffs (taller than pocket_h).
-// F3's rear ear stops 2.5 mm short of the right wall: close it with foam.
+//
+// Foam (airflow only goes where it should once these are closed):
+//   F4 right end             between the tube end and the right wall
+//   F4 rib end               to the fan wall's rear face, if it gaps
+//   PSU front                block to the fan wall's left end, or exhaust
+//                            loops out the open front-left bay into F1
+//   F3 rear ear              2.5 mm to the right wall
+//   cable notches            around the SFF and SATA power cables
 //
 // MEASURE before printing:
-//   slot_cover_*             against a stock low-profile cover
 //   esp_board                ESP32-C3 board size (SuperMini assumed)
 //
-// Materials: sleds, roofs, fan wall, sleeves, tray, covers: PETG/ASA.
+// Materials: sleds, roofs, fan wall, sleeves, tray: PETG/ASA.
 // grommet, fan_gasket: TPU 95A. No supports needed for any part.
 //
 // Parts (qty): sled_f1..f3 1 each (pockets differ), sled_f4 1, roof 4,
 //   grommets (plate of 36, 32 needed), sleeves (plate of 36), fanwall_l 1,
-//   fanwall_r 1, fan_gasket 2, slot_cover 2, esp_tray 1, washers (plate of
+//   fanwall_r 1, fan_gasket 2, esp_tray 1, washers (plate of
 //   4). Export: Makefile.
 //
 // Hardware: 32x 6-32 x 3/8" pan head (drives), 4x M3 x 8 (or 6-32 x 5/16")
 // pan head + printed washers (3 fan wall, 1 F4 tab; washer flat towards the
 // fan wall, or towards a fan screw head if it fouls one), 8x fan screws,
-// 6x M3 x 4-6 pan head left proud in old cage holes as locator pins. Seal
-// cable notches with foam.
+// 6x M3 x 4-6 pan head left proud in old cage holes as locator pins.
 //
 // Assembly: grommets into sled walls from outside, sleeve into each grommet,
 // drive in from the front, screw. Roof in from the front. Fans onto the fan
@@ -150,6 +158,7 @@ fan_head_d = 10.6;  // lower fan screw heads sink into the foot
 split_x = 240;
 cable_notch = [[200, 235], 22];  // SFF cables into plenum: x range, height
 sata_notch  = [[165, 195], 22];   // SATA power through plenum left wall: y range
+spoke = [2, 2];   // cable guard bars across the fan holes: width, thickness
 fw_standoffs = [for (s = standoffs)
   if (s[1] > fw_y - foot_d + 3 && s[1] < fw_y - 3) s];
 
@@ -159,18 +168,12 @@ f4_front_x = W_int - 4;   // drive front end (right)
 f4_y = fan_rear + (D_int - fan_rear - (W + 2*head_prot)) / 2 + head_prot;
 f4_tab = [351 - f4_y, f4_front_x - 251];  // standoff past the connector end, sled coords
 tab_h = standoff_h + foot_t;
+rib_t = 2.4;              // rib between the fans (4 mm apart), on F4's front wall
+rib_ly = f4_front_x - (fan_x[0] + fan + fan_x[1]) / 2;   // along the sled
+rib_l = f4_y - (fw_y + fw_t) - 1;                         // to 1 mm off the fan wall
 win_post = 7;             // half width of solid post around screws
 win_mullion = 3;
 win_max_bridge = 28;
-
-/* [Slot cover: MEASURE against stock LP cover] */
-slot_cover_w = 18.4;
-slot_cover_l = 79.2;
-slot_cover_t = 2;
-slot_tab_l = 11.4;
-slot_screw_w = 4.4;
-cable_d = 10.6;
-cable_slot_l = 45;
 
 /* [ESP32-C3 tray] */
 esp_board = [18.2, 22.8, 1.0];  // SuperMini w, l, pcb
@@ -240,8 +243,9 @@ function pockets_f4() = [for (p = concat(standoffs, floor_holes))
 function win_spans() =
   let (a = min(screw_y), b = max(screw_y),
        edges = [band + 1, a - win_post, a + win_post,
+                rib_ly - win_mullion/2, rib_ly + win_mullion/2,   // rib root
                 b - win_post, b + win_post, L - band - 1])
-  [for (i = [0 : 2 : 4]) [edges[i], edges[i + 1]]];
+  [for (i = [0 : 2 : 6]) [edges[i], edges[i + 1]]];
 
 module windows() {
   for (s = win_spans()) {
@@ -266,9 +270,13 @@ module sled(win = false, ear_l = 0, ear_r = 0, pockets = []) {
         translate([W - eps, L - band, 0]) cube([ear_r + eps, band, top]);
         // rear lip: the fan-wall foot clamps it to the floor
         translate([0, L - eps, 0]) cube([W, lip_l + eps, standoff_h]);
-      } else   // F4 floor tab onto its standoff
+      } else {
+        // F4 floor tab onto its standoff
         translate([f4_tab[0] - pocket_r - 2, L - eps, 0])
           cube([2*pocket_r + 4, f4_tab[1] + pocket_r + 2 - L + eps, tab_h]);
+        // F4 rib: drops between the fans, splits their outlets
+        translate([-rib_l, rib_ly - rib_t/2, 0]) cube([rib_l + eps, rib_t, top]);
+      }
     }
     for (x = [t - groove, W - t])
       translate([x, -1, roof_z0 - 0.2]) cube([groove, L - band + 1, roof_t + 0.4]);
@@ -362,6 +370,10 @@ module fanwall_full() {
     translate([plenum_x0 - 1, sata_notch[0][0], -1])
       cube([t + 2, sata_notch[0][1] - sata_notch[0][0], sata_notch[1] + 1]);
   }
+  // cable guards: 3 thin bars across each fan hole, on the bed side
+  for (fx = fan_x, i = [-1 : 1])
+    translate([fx + fan/2 + i * fan_d/4 - spoke[0]/2, fw_y + fw_t - spoke[1], fan_z0 + 1])
+      cube([spoke[0], spoke[1], fan - 2]);
 }
 
 module fanwall_l() {
@@ -386,25 +398,6 @@ module fan_gasket() {
     translate([0, 0, -1]) cylinder(d = fan_d, h = 5, $fn = 96);
     for (i = [-1, 1], j = [-1, 1])
       translate([i * fan_hole/2, j * fan_hole/2, -1]) cylinder(d = 4.6, h = 5);
-  }
-}
-
-// low-profile PCIe slot cover with an open slot for one SFF-8088 cable.
-// printed flat: plate on the bed, tab up
-module slot_cover() {
-  difference() {
-    union() {
-      cube([slot_cover_w, slot_cover_l, slot_cover_t]);
-      translate([0, slot_cover_l - slot_cover_t, 0]) cube([slot_cover_w, slot_cover_t, slot_tab_l]);
-    }
-    // cable slot from the bottom end
-    translate([(slot_cover_w - cable_d) / 2, -1, -1]) cube([cable_d, cable_slot_l - cable_d/2 + 1, 10]);
-    translate([slot_cover_w / 2, cable_slot_l - cable_d/2, -1]) cylinder(d = cable_d, h = 10);
-    // screw notch in the tab
-    translate([slot_cover_w / 2, slot_cover_l + 1, slot_tab_l - 5])
-      rotate([90, 0, 0]) cylinder(d = slot_screw_w, h = 10);
-    translate([(slot_cover_w - slot_screw_w) / 2, slot_cover_l - 5, slot_tab_l - 5])
-      cube([slot_screw_w, 10, 10]);
   }
 }
 
@@ -503,7 +496,6 @@ else if (part == "sleeves") grid(36, sleeve_d + 4) sleeve();
 else if (part == "fanwall_l") fw_flat() fanwall_l();
 else if (part == "fanwall_r") fw_flat() fanwall_r();
 else if (part == "fan_gasket") fan_gasket();
-else if (part == "slot_cover") slot_cover();
 else if (part == "esp_tray") esp_tray();
 else if (part == "info") {
   echo(W = W, L = L, rank_x = rank_x, f4_y = f4_y, plenum_x0 = plenum_x0,
