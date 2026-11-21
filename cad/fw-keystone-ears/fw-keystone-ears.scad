@@ -39,6 +39,7 @@ csk_d = 6.4;                 // M3 countersunk head (DIN 7991: 6.0)
 
 left_kind  = "sockets";      // "module" | "sockets" | "plain"
 right_kind = "module";
+max_sockets = 2;             // per ear; fewer sockets = thicker walls between
 
 /* [Rack: EIA-310] */
 panel_h  = 43.66;             // 1U minus 1/32"
@@ -50,12 +51,14 @@ rack_slot = [10, 6.6];        // M6 cage nut slot, w x h
 
 /* [Patch panel insert] */
 // 8-port snap-in insert: 144 x 44 bezel, body behind it snaps into a cutout.
-// PHOTO ESTIMATES: measure the cutout and sheet thickness on the old metal
-// frame, then print "test-module" to check the snap.
-mod_cut_w   = 139;   // cutout width
-mod_cut_h   = 34.5;  // cutout height
+// Cutout measured on the old metal frame (centred in height). It sits hard
+// against the chassis flange to keep patch cables short. Print "test-module"
+// to check the snap.
+mod_cut_w   = 138.2; // cutout width, measured
+mod_cut_h   = 35;    // cutout height, measured
+mod_clr     = 0.1;   // print clearance per side
 mod_cut_dz  = 0;     // cutout centre above panel centre
-mod_panel_t = 1.5;   // sheet thickness the insert's tabs grip
+mod_panel_t = 1.5;   // sheet thickness the insert's tabs grip: ESTIMATE
 mod_lip     = 2;     // thinned band around the cutout for the tabs
 mod_ports   = 8;
 mod_pitch   = 17.4;
@@ -64,7 +67,7 @@ mod_bezel   = [144, 2.5, 44]; // w, thickness, h: preview only
 /* [Keystone socket] */
 ks_w      = 15.0;  // front opening
 ks_h      = 16.5;
-ks_pitch  = 16.5;  // 1.5mm web
+ks_pitch  = 16.5;  // minimum: 1.5mm web
 // Depths from the front face. The fixed hook (bottom) and sprung latch (top)
 // each sit in a pocket, held by a 45 deg catch at the rear. Untested: print
 // "test-socket" first.
@@ -99,15 +102,17 @@ right_free = (450 - fw_w) / 2 - fw_offset;
 
 function inner_w(free) = free - rail_clr - flange_t;
 
-// sockets start against the flange; slack goes to the outer wall
-function n_sockets(free) = max(0, floor(inner_w(free) / ks_pitch));
-function socket_x(i) = flange_t + ks_pitch * (i + 0.5);
+// sockets are spread evenly across the inner width
+function n_sockets(free) =
+    max(0, min(max_sockets, floor(inner_w(free) / ks_pitch)));
+function socket_x(free, i) = flange_t + inner_w(free) * (i + 0.5) / n_sockets(free);
 
-// insert sits centred between the flange and the end wall
-function mod_x0(free) = flange_t + (inner_w(free) - plate_t - mod_cut_w) / 2;
-function mod_port_x(free, i) =
-    mod_x0(free) + mod_cut_w / 2 + (i - (mod_ports - 1) / 2) * mod_pitch;
-mod_z0 = (panel_h - mod_cut_h) / 2 + mod_cut_dz;
+// insert cutout, hard against the chassis flange
+cut_w  = mod_cut_w + 2 * mod_clr;
+cut_h  = mod_cut_h + 2 * mod_clr;
+mod_x0 = flange_t + mod_lip;
+mod_z0 = (panel_h - cut_h) / 2 + mod_cut_dz;
+function mod_port_x(i) = mod_x0 + cut_w / 2 + (i - (mod_ports - 1) / 2) * mod_pitch;
 
 function n_ports(kind, free) =
     kind == "module" ? mod_ports : kind == "sockets" ? n_sockets(free) : 0;
@@ -116,7 +121,8 @@ nR = n_ports(right_kind, right_free);
 echo(str("ports: left ", nL, ", right ", nR, ", total ", nL + nR));
 for (s = [[left_kind, left_free], [right_kind, right_free]])
     if (s[0] == "module")
-        assert(mod_x0(s[1]) - flange_t >= mod_lip, "insert does not fit");
+        assert(mod_x0 + cut_w + mod_lip <= s[1] - rail_clr - plate_t,
+               "insert does not fit");
 
 module slot(len, d) {
     hull() for (s = [-1, 1]) translate([s * (len - d) / 2, 0]) circle(d = d);
@@ -173,9 +179,8 @@ module ear_body(kind, free) {
     w = free + ear_w;
     box_x1 = free - rail_clr;
     n = n_ports(kind, free);
-    x0 = mod_x0(free);
     lip_z0 = max(plate_t, mod_z0 - mod_lip);
-    lip_z1 = min(panel_h - plate_t, mod_z0 + mod_cut_h + mod_lip);
+    lip_z1 = min(panel_h - plate_t, mod_z0 + cut_h + mod_lip);
     difference() {
         union() {
             cube([w, face_t, panel_h]);                                  // face
@@ -199,16 +204,16 @@ module ear_body(kind, free) {
         rack_slots(w);
         side_slots(flange_t);
         if (kind == "sockets") for (i = [0 : n - 1]) {
-            translate([socket_x(i) - ks_w / 2, 0, ks_z]) ks_cut();
-            tie_slots(socket_x(i));
+            translate([socket_x(free, i) - ks_w / 2, 0, ks_z]) ks_cut();
+            tie_slots(socket_x(free, i));
         }
         if (kind == "module") {
-            translate([x0, -eps, mod_z0])
-                cube([mod_cut_w, face_t + 2 * eps, mod_cut_h]);
+            translate([mod_x0, -eps, mod_z0])
+                cube([cut_w, face_t + 2 * eps, cut_h]);
             // thin the face around the cutout to the sheet thickness
-            translate([x0 - mod_lip, mod_panel_t, lip_z0])
-                cube([mod_cut_w + 2 * mod_lip, face_t, lip_z1 - lip_z0]);
-            for (i = [0 : n - 1]) tie_slots(mod_port_x(free, i));
+            translate([mod_x0 - mod_lip + eps, mod_panel_t, lip_z0])
+                cube([cut_w + 2 * mod_lip - eps, face_t, lip_z1 - lip_z0]);
+            for (i = [0 : n - 1]) tie_slots(mod_port_x(i));
             // screwdriver access to the chassis screws
             for (z = side_hole_z)
                 translate([box_x1 - plate_t - eps, side_hole_y, z])
@@ -224,7 +229,7 @@ module ear(side, kind, free, first) {
         mirror([side < 0 ? 1 : 0, 0, 0]) ear_body(kind, free);
         // the insert carries its own label strip
         if (labels && kind == "sockets") for (i = [0 : n - 1])
-            translate([side * socket_x(i), label_depth, ks_z + ks_h + latch_d + 1])
+            translate([side * socket_x(free, i), label_depth, ks_z + ks_h + latch_d + 1])
                 rotate([90, 0, 0]) linear_extrude(label_depth + 1)
                     text(str(side > 0 ? first + i : first + n - 1 - i),
                          size = label_size, halign = "center",
@@ -250,10 +255,10 @@ if (part == "test-module") print_pose() intersection() {
     translate([-1, -1, -1]) cube([right_free + ear_w + 2, 7, panel_h + 2]);
 }
 // two-socket coupon, to check the keystone fit
-if (part == "test-socket") print_pose() intersection() {
-    ear_body("sockets", 60);
-    translate([socket_x(1) - ks_pitch / 2, -1, ks_z - hook_d - ks_wall])
-        cube([2 * ks_pitch, ks_d + 1 + eps, ks_h + hook_d + latch_d + 2 * ks_wall]);
+if (part == "test-socket") print_pose() difference() {
+    cube([2 * ks_pitch, ks_d, ks_h + hook_d + latch_d + 2 * ks_wall]);
+    for (i = [0, 1])
+        translate([(ks_pitch - ks_w) / 2 + i * ks_pitch, 0, hook_d + ks_wall]) ks_cut();
 }
 if (part == "assembly") {
     x0 = -225 + left_free; // firewall left side
@@ -261,6 +266,6 @@ if (part == "assembly") {
     translate([x0 + fw_w, 0, 0]) right();
     %translate([x0, fw_recess, (panel_h - 43) / 2]) cube([fw_w, 184, 43]);
     if (right_kind == "module")                                          // bezel
-        %translate([x0 + fw_w + mod_x0(right_free) + (mod_cut_w - mod_bezel[0]) / 2,
+        %translate([x0 + fw_w + mod_x0 + (cut_w - mod_bezel[0]) / 2,
                     -mod_bezel[1], (panel_h - mod_bezel[2]) / 2]) cube(mod_bezel);
 }
