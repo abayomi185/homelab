@@ -13,6 +13,7 @@ tags: ["server", "hypervisor", "proxmox", "amd-epyc"]
 | /    |                                 |
 | ---- | ------------------------------- |
 | CPU  | AMD EPYC 7532 (1.50 GHz – 3.31 GHz) |
+| HBA  | Dell H200E, flashed to LSI 9200-8e P20 IT; 2× SFF-8088 |
 | Role | Proxmox VE hypervisor           |
 | BMC  | [[../YHLD-IPMI1.md\|YHLD-IPMI1]] |
 
