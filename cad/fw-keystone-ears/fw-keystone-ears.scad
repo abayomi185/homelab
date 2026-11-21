@@ -33,9 +33,10 @@ fw_offset = -50;             // chassis centre from rack centre, - = left
 fw_recess = 2;               // chassis front behind ear face
 side_hole_pitch = 22;        // vertical, centred
 side_hole_y = fw_recess + 5; // from ear face
-side_slot_len = 2;           // extra fore/aft play
-side_screw_d = 3.6;          // M3 clearance
+side_slot_len = 1;           // extra fore/aft play
+side_screw_d = 3.4;          // M3 clearance
 csk_d = 6.4;                 // M3 countersunk head (DIN 7991: 6.0)
+csk_angle = 90;              // included angle of the head
 
 left_kind  = "sockets";      // "module" | "sockets" | "plain"
 right_kind = "module";
@@ -75,11 +76,10 @@ ks_pitch  = 16.5;  // minimum: 1.5mm web
 ks_d      = 10;    // socket depth
 hook_d    = 2;     // hook pocket height
 hook_y    = 6.5;   // hook pocket starts
-latch_d   = 6;     // latch pocket height (4 was too tight on the test print;
-                   // also opens the rear entry to ks_h + latch_d - catch_h)
+latch_d   = 5.5;   // latch pocket height (test prints: 4 too tight, 6 loose)
 latch_y   = 4;     // latch pocket starts
-catch_y   = 8;     // catches start
-catch_h   = 2;     // catch overhang
+hook_catch  = 2;   // catch overhang at the rear; the rear entry is
+latch_catch = 3.5; // ks_h + hook_d + latch_d - both = 18.5
 ks_wall   = 3;     // above / below the pockets
 
 /* [Body] */
@@ -141,7 +141,7 @@ side_hole_z = [for (s = [-1, 1]) panel_h / 2 + s * side_hole_pitch / 2];
 
 // countersunk M3 slots through a flange of thickness t, head on the +x side
 module side_slots(t) {
-    csk_h = (csk_d - side_screw_d) / 2; // 90 deg
+    csk_h = (csk_d - side_screw_d) / 2 / tan(csk_angle / 2);
     for (z = side_hole_z)
         translate([0, side_hole_y, z])
             hull() for (dy = [-1, 1] * side_slot_len / 2)
@@ -159,13 +159,13 @@ ks_z = (panel_h - ks_h) / 2; // bottom of the socket opening
 module ks_cut() {
     rotate([90, 0, 90]) linear_extrude(ks_w) {
         translate([-eps, 0]) square([ks_d + 2 * eps, ks_h]);
-        polygon([[hook_y, eps], [hook_y, -hook_d], [catch_y, -hook_d],
-                 [catch_y + catch_h, catch_h - hook_d], [ks_d + eps, catch_h - hook_d],
+        polygon([[hook_y, eps], [hook_y, -hook_d], [ks_d - hook_catch, -hook_d],
+                 [ks_d, hook_catch - hook_d], [ks_d + eps, hook_catch - hook_d],
                  [ks_d + eps, eps]]);
         polygon([[latch_y, ks_h - eps], [latch_y, ks_h + latch_d],
-                 [catch_y, ks_h + latch_d],
-                 [catch_y + catch_h, ks_h + latch_d - catch_h],
-                 [ks_d + eps, ks_h + latch_d - catch_h], [ks_d + eps, ks_h - eps]]);
+                 [ks_d - latch_catch, ks_h + latch_d],
+                 [ks_d, ks_h + latch_d - latch_catch],
+                 [ks_d + eps, ks_h + latch_d - latch_catch], [ks_d + eps, ks_h - eps]]);
     }
 }
 
@@ -257,10 +257,11 @@ if (part == "plate") {
     translate([-(right_free + ear_w) / 2, 60, 0]) print_pose() right();
     translate([(left_free + ear_w) / 2, 0, 0]) print_pose() left();
 }
-// front 9mm of the right ear, to check the insert snaps in
+// front 11mm of the right ear, to check the insert snaps in and the
+// chassis screws seat
 if (part == "test-module") print_pose() intersection() {
     right();
-    translate([-1, -1, -1]) cube([right_free + ear_w + 2, 10, panel_h + 2]);
+    translate([-1, -1, -1]) cube([right_free + ear_w + 2, 12, panel_h + 2]);
 }
 // two-socket coupon, to check the keystone fit
 if (part == "test-socket") print_pose() difference() {
