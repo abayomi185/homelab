@@ -157,8 +157,8 @@ ks_z = (panel_h - ks_h) / 2; // bottom of the socket opening
 
 // One keystone socket, cut from the front (y=0) to ks_d. Origin: bottom
 // left of the opening. Profile is in (y, z), extruded across the opening.
-module ks_cut() {
-    rotate([90, 0, 90]) linear_extrude(ks_w) {
+module ks_cut(w = ks_w, latch_catch = latch_catch) {
+    rotate([90, 0, 90]) linear_extrude(w) {
         translate([-eps, 0]) square([ks_d + 2 * eps, ks_h]);
         polygon([[hook_y, eps], [hook_y, -hook_d], [ks_d - hook_catch, -hook_d],
                  [ks_d, hook_catch - hook_d], [ks_d + eps, hook_catch - hook_d],
@@ -264,11 +264,17 @@ if (part == "test-module") print_pose() intersection() {
     right();
     translate([-1, -1, -1]) cube([right_free + ear_w + 2, 12, panel_h + 2]);
 }
-// two-socket coupon, to check the keystone fit
+// two-socket coupon, to check the keystone fit: [width, latch catch] per
+// socket. The second socket is on the side with the cut corner.
+test_sockets = [[14.8, 2.5], [14.6, 3]]; // rear entry 19.5, 19.0
 if (part == "test-socket") print_pose() difference() {
-    cube([2 * ks_pitch, ks_d, ks_h + hook_d + latch_d + 2 * ks_wall]);
+    h = ks_h + hook_d + latch_d + 2 * ks_wall;
+    cube([2 * ks_pitch, ks_d, h]);
     for (i = [0, 1])
-        translate([(ks_pitch - ks_w) / 2 + i * ks_pitch, 0, hook_d + ks_wall]) ks_cut();
+        translate([(ks_pitch - test_sockets[i][0]) / 2 + i * ks_pitch, 0, hook_d + ks_wall])
+            ks_cut(test_sockets[i][0], test_sockets[i][1]);
+    translate([2 * ks_pitch, -eps, h]) rotate([-90, 0, 0])
+        linear_extrude(ks_d + 2 * eps) polygon([[1, -1], [-2.5, -1], [1, 2.5]]);
 }
 if (part == "assembly") {
     x0 = -225 + left_free; // firewall left side
