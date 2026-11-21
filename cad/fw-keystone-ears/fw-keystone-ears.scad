@@ -58,8 +58,9 @@ mod_cut_w   = 138.2; // cutout width, measured
 mod_cut_h   = 35;    // cutout height, measured
 mod_clr     = 0.1;   // print clearance per side
 mod_cut_dz  = 0;     // cutout centre above panel centre
-mod_panel_t = 1.5;   // sheet thickness the insert's tabs grip: ESTIMATE
-mod_lip     = 2;     // thinned band around the cutout for the tabs
+mod_panel_t = 5.3;   // frame thickness the insert's tabs grip, measured
+                     // (old frame is 11.3 deep overall)
+mod_lip     = 2;     // collar around the cutout that the tabs grip
 mod_ports   = 8;
 mod_pitch   = 17.4;
 mod_bezel   = [144, 2.5, 44]; // w, thickness, h: preview only
@@ -187,8 +188,12 @@ module ear_body(kind, free) {
             cube([flange_t, flange_d, panel_h]);                         // flange
             if (kind != "plain") for (z = [0, panel_h - plate_t])        // plates
                 translate([0, 0, z]) cube([box_x1, box_d, plate_t]);
-            if (kind == "module")                                        // end wall
-                translate([box_x1 - plate_t, 0, 0]) cube([plate_t, box_d, panel_h]);
+            if (kind == "module") {
+                translate([box_x1 - plate_t, 0, 0])                      // end wall
+                    cube([plate_t, box_d, panel_h]);
+                translate([mod_x0 - mod_lip, 0, lip_z0])                 // collar
+                    cube([cut_w + 2 * mod_lip, mod_panel_t, lip_z1 - lip_z0]);
+            }
             if (kind == "sockets") {
                 translate([flange_t, 0, ks_z - hook_d - ks_wall])
                     cube([inner_w(free), ks_d, ks_h + hook_d + latch_d + 2 * ks_wall]);
@@ -209,15 +214,17 @@ module ear_body(kind, free) {
         }
         if (kind == "module") {
             translate([mod_x0, -eps, mod_z0])
-                cube([cut_w, face_t + 2 * eps, cut_h]);
-            // thin the face around the cutout to the sheet thickness
-            translate([mod_x0 - mod_lip + eps, mod_panel_t, lip_z0])
-                cube([cut_w + 2 * mod_lip - eps, face_t, lip_z1 - lip_z0]);
+                cube([cut_w, max(face_t, mod_panel_t) + 2 * eps, cut_h]);
+            // thin the face around the cutout if the frame is thinner
+            if (mod_panel_t < face_t)
+                translate([mod_x0 - mod_lip + eps, mod_panel_t, lip_z0])
+                    cube([cut_w + 2 * mod_lip - eps, face_t, lip_z1 - lip_z0]);
             for (i = [0 : n - 1]) tie_slots(mod_port_x(i));
-            // screwdriver access to the chassis screws
+            // screwdriver access to the chassis screws, through the end
+            // wall and the collar ends
             for (z = side_hole_z)
-                translate([box_x1 - plate_t - eps, side_hole_y, z])
-                    rotate([0, 90, 0]) cylinder(d = 7, h = plate_t + 2 * eps);
+                translate([flange_t + eps, side_hole_y, z])
+                    rotate([0, 90, 0]) cylinder(d = 7, h = box_x1 - flange_t);
         }
     }
 }
@@ -249,10 +256,10 @@ if (part == "plate") {
     translate([-(right_free + ear_w) / 2, 60, 0]) print_pose() right();
     translate([(left_free + ear_w) / 2, 0, 0]) print_pose() left();
 }
-// front 6mm of the right ear, to check the insert snaps in
+// front 9mm of the right ear, to check the insert snaps in
 if (part == "test-module") print_pose() intersection() {
     right();
-    translate([-1, -1, -1]) cube([right_free + ear_w + 2, 7, panel_h + 2]);
+    translate([-1, -1, -1]) cube([right_free + ear_w + 2, 10, panel_h + 2]);
 }
 // two-socket coupon, to check the keystone fit
 if (part == "test-socket") print_pose() difference() {
