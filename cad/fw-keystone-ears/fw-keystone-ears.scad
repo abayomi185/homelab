@@ -55,12 +55,12 @@ rack_slot = [10, 6.6];        // M6 cage nut slot, w x h
 // against the chassis flange to keep patch cables short. Print "test-module"
 // to check the snap.
 mod_cut_w   = 138.2; // cutout width, measured
-mod_cut_h   = 35;    // cutout height, measured
+mod_cut_h   = 33.5;  // cutout height: 35 measured on the frame, but the
+                     // test print needed 1.5 less for the tabs to latch
 mod_clr     = 0.1;   // print clearance per side
 mod_cut_dz  = 0;     // cutout centre above panel centre
-mod_panel_t = 5.3;   // frame thickness the insert's tabs grip, measured
-                     // (old frame is 11.3 deep overall)
-mod_lip     = 2;     // collar around the cutout that the tabs grip
+mod_panel_t = 1.6;   // lip thickness the insert's tabs latch behind, measured
+mod_lip     = 2;     // width of that lip around the cutout
 mod_ports   = 8;
 mod_pitch   = 17.4;
 mod_bezel   = [144, 2.5, 44]; // w, thickness, h: preview only
@@ -70,12 +70,13 @@ ks_w      = 15.0;  // front opening
 ks_h      = 16.5;
 ks_pitch  = 16.5;  // minimum: 1.5mm web
 // Depths from the front face. The fixed hook (bottom) and sprung latch (top)
-// each sit in a pocket, held by a 45 deg catch at the rear. Untested: print
+// each sit in a pocket, held by a 45 deg catch at the rear. Print
 // "test-socket" first.
 ks_d      = 10;    // socket depth
 hook_d    = 2;     // hook pocket height
 hook_y    = 6.5;   // hook pocket starts
-latch_d   = 4;     // latch pocket height
+latch_d   = 6;     // latch pocket height (4 was too tight on the test print;
+                   // also opens the rear entry to ks_h + latch_d - catch_h)
 latch_y   = 4;     // latch pocket starts
 catch_y   = 8;     // catches start
 catch_h   = 2;     // catch overhang
