@@ -81,6 +81,8 @@ latch_y   = 4;     // latch pocket starts
 hook_catch  = 2;   // catch overhang at the rear; the rear entry is
 latch_catch = 2;   // ks_h + hook_d + latch_d - both = 20 (18.5 too tight
                    // for the latch to flex through, 20.5 loose)
+catch_land  = 0;   // flat behind each catch slope: thickens the catch to
+                   // take up front-to-back play
 ks_wall   = 3;     // above / below the pockets
 
 /* [Body] */
@@ -157,15 +159,16 @@ ks_z = (panel_h - ks_h) / 2; // bottom of the socket opening
 
 // One keystone socket, cut from the front (y=0) to ks_d. Origin: bottom
 // left of the opening. Profile is in (y, z), extruded across the opening.
-module ks_cut(w = ks_w, latch_catch = latch_catch) {
+module ks_cut(w = ks_w, latch_catch = latch_catch, land = catch_land) {
+    y1 = ks_d - land; // catch slopes end
     rotate([90, 0, 90]) linear_extrude(w) {
         translate([-eps, 0]) square([ks_d + 2 * eps, ks_h]);
-        polygon([[hook_y, eps], [hook_y, -hook_d], [ks_d - hook_catch, -hook_d],
-                 [ks_d, hook_catch - hook_d], [ks_d + eps, hook_catch - hook_d],
+        polygon([[hook_y, eps], [hook_y, -hook_d], [y1 - hook_catch, -hook_d],
+                 [y1, hook_catch - hook_d], [ks_d + eps, hook_catch - hook_d],
                  [ks_d + eps, eps]]);
         polygon([[latch_y, ks_h - eps], [latch_y, ks_h + latch_d],
-                 [ks_d - latch_catch, ks_h + latch_d],
-                 [ks_d, ks_h + latch_d - latch_catch],
+                 [y1 - latch_catch, ks_h + latch_d],
+                 [y1, ks_h + latch_d - latch_catch],
                  [ks_d + eps, ks_h + latch_d - latch_catch], [ks_d + eps, ks_h - eps]]);
     }
 }
@@ -264,16 +267,18 @@ if (part == "test-module") print_pose() intersection() {
     right();
     translate([-1, -1, -1]) cube([right_free + ear_w + 2, 12, panel_h + 2]);
 }
-// two-socket coupon, to check the keystone fit: [width, latch catch] per
-// socket. The second socket is on the side with the cut corner.
-test_sockets = [[14.8, 2.5], [14.6, 3]]; // rear entry 19.5, 19.0
+// socket coupon, to check the keystone fit: [width, latch catch, land] per
+// socket, loosest first. The tightest is at the end with the cut corner.
+// Rear entry is 22 - latch catch: 19.75, 19.5, 19.25, 19.0.
+test_sockets = [[14.9, 2.25, 0.25], [14.8, 2.5, 0.5], [14.7, 2.75, 0.75], [14.6, 3, 1]];
 if (part == "test-socket") print_pose() difference() {
+    n = len(test_sockets);
     h = ks_h + hook_d + latch_d + 2 * ks_wall;
-    cube([2 * ks_pitch, ks_d, h]);
-    for (i = [0, 1])
-        translate([(ks_pitch - test_sockets[i][0]) / 2 + i * ks_pitch, 0, hook_d + ks_wall])
-            ks_cut(test_sockets[i][0], test_sockets[i][1]);
-    translate([2 * ks_pitch, -eps, h]) rotate([-90, 0, 0])
+    cube([n * ks_pitch, ks_d, h]);
+    for (i = [0 : n - 1]) let (t = test_sockets[i])
+        translate([(ks_pitch - t[0]) / 2 + i * ks_pitch, 0, hook_d + ks_wall])
+            ks_cut(t[0], t[1], t[2]);
+    translate([n * ks_pitch, -eps, h]) rotate([-90, 0, 0])
         linear_extrude(ks_d + 2 * eps) polygon([[1, -1], [-2.5, -1], [1, 2.5]]);
 }
 if (part == "assembly") {
