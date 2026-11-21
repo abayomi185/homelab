@@ -79,7 +79,8 @@ hook_y    = 6.5;   // hook pocket starts
 latch_d   = 5.5;   // latch pocket height (test prints: 4 too tight, 6 loose)
 latch_y   = 4;     // latch pocket starts
 hook_catch  = 2;   // catch overhang at the rear; the rear entry is
-latch_catch = 3.5; // ks_h + hook_d + latch_d - both = 18.5
+latch_catch = 2;   // ks_h + hook_d + latch_d - both = 20 (18.5 too tight
+                   // for the latch to flex through, 20.5 loose)
 ks_wall   = 3;     // above / below the pockets
 
 /* [Body] */
