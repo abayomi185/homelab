@@ -18,7 +18,7 @@
 // open outer side), rack it, then snap keystones in from the rear.
 // Port numbers on the face run 1..n left to right.
 //
-// Export: see Makefile. part = "right" | "left" | "plate" | "assembly"
+// Export: see Makefile. part = "right" | "left" | "plate" | "test" | "assembly"
 
 part = "assembly";
 
@@ -43,8 +43,17 @@ rack_slot = [10, 6.6];        // M6 cage nut slot, w x h
 ks_w      = 15.0;  // front opening
 ks_h      = 16.5;
 ks_pitch  = 16.5;  // 1.5mm web; 12 ports in the right ear
-clip_t    = 2.0;   // plate thickness the keystone clips grip
-latch_h   = 23.5;  // rear clearance for hook + latch
+// Receptacle profile, depths measured from the front face. The fixed hook
+// (bottom) and the sprung latch (top) each sit in a pocket and are held in
+// by a 45 deg catch at the rear. Print the "test" part first to check fit.
+ks_d      = 10;    // receptacle depth
+hook_d    = 2;     // hook pocket height
+hook_y    = 6.5;   // hook pocket starts
+latch_d   = 4;     // latch pocket height
+latch_y   = 4;     // latch pocket starts
+catch_y   = 8;     // catches start
+catch_h   = 2;     // catch overhang
+ks_wall   = 3;     // above / below the pockets
 
 /* [Body] */
 face_t    = 4;
@@ -98,6 +107,23 @@ module side_slots(t) {
                 }
 }
 
+ks_z = (panel_h - ks_h) / 2; // bottom of the opening
+
+// One keystone receptacle, cut from the front (y=0) to ks_d. Origin: bottom
+// left of the opening. Profile is in (y, z), extruded across the opening.
+module ks_cut() {
+    rotate([90, 0, 90]) linear_extrude(ks_w) {
+        translate([-eps, 0]) square([ks_d + 2 * eps, ks_h]);
+        polygon([[hook_y, eps], [hook_y, -hook_d], [catch_y, -hook_d],
+                 [catch_y + catch_h, catch_h - hook_d], [ks_d + eps, catch_h - hook_d],
+                 [ks_d + eps, eps]]);
+        polygon([[latch_y, ks_h - eps], [latch_y, ks_h + latch_d],
+                 [catch_y, ks_h + latch_d],
+                 [catch_y + catch_h, ks_h + latch_d - catch_h],
+                 [ks_d + eps, ks_h + latch_d - catch_h], [ks_d + eps, ks_h - eps]]);
+    }
+}
+
 module right() {
     w = right_free + ear_w;
     box_x1 = right_free - rail_clr;
@@ -107,6 +133,8 @@ module right() {
             cube([flange_t, flange_d, panel_h]);                         // flange
             translate([0, 0, panel_h - plate_t]) cube([box_x1, top_d, plate_t]);
             cube([box_x1, shelf_d, plate_t]);                            // shelf
+            translate([flange_t, 0, ks_z - hook_d - ks_wall])             // receptacles
+                cube([inner_w, ks_d, ks_h + hook_d + latch_d + 2 * ks_wall]);
             // face/plate fillets (45 deg, print-safe face down)
             for (z = [plate_t, panel_h - plate_t])
                 translate([flange_t, face_t, z])
@@ -115,12 +143,8 @@ module right() {
                             ? [[0, 0], [-fillet, 0], [0, fillet]]
                             : [[0, 0], [fillet, 0], [0, fillet]]);
         }
-        // keystone openings + rear latch clearance
         for (i = [0 : n - 1])
-            translate([port_x(i) - ks_w / 2, -eps, (panel_h - ks_h) / 2])
-                cube([ks_w, face_t + 2 * eps, ks_h]);
-        translate([flange_t + eps, clip_t, (panel_h - latch_h) / 2])
-            cube([inner_w - 2 * eps, face_t, latch_h]);
+            translate([port_x(i) - ks_w / 2, 0, ks_z]) ks_cut();
         rack_slots(w);
         side_slots(flange_t);
         // zip-tie slot pair behind each port
@@ -129,7 +153,7 @@ module right() {
                 cube([2.2, 4.5, plate_t + 2 * eps]);
         // port numbers
         if (labels) for (i = [0 : n - 1])
-            translate([port_x(i), label_depth, (panel_h + latch_h) / 2 + 1.2])
+            translate([port_x(i), label_depth, ks_z + ks_h + latch_d + 1])
                 rotate([90, 0, 0]) linear_extrude(label_depth + 1)
                     text(str(i + 1), size = label_size, halign = "center",
                          font = "Liberation Sans:style=Bold");
@@ -153,6 +177,12 @@ if (part == "left")  print_pose() left();
 if (part == "plate") {
     translate([-(right_free + ear_w) / 2, 60, 0]) print_pose() right();
     translate([(left_free + ear_w) / 2, 0, 0]) print_pose() left();
+}
+// two-port coupon to check the keystone fit before printing the ear
+if (part == "test") print_pose() intersection() {
+    right();
+    translate([port_x(1) - ks_pitch / 2, -1, ks_z - hook_d - ks_wall])
+        cube([2 * ks_pitch, ks_d + 1 + eps, ks_h + hook_d + latch_d + 2 * ks_wall]);
 }
 if (part == "assembly") {
     x0 = -225 + left_free; // firewall left side
