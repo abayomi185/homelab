@@ -67,22 +67,22 @@ mod_pitch   = 17.4;
 mod_bezel   = [144, 2.5, 44]; // w, thickness, h: preview only
 
 /* [Keystone socket] */
-ks_w      = 15.0;  // front opening
+ks_w      = 14.9;  // front opening
 ks_h      = 16.5;
 ks_pitch  = 16.5;  // minimum: 1.5mm web
 // Depths from the front face. The fixed hook (bottom) and sprung latch (top)
-// each sit in a pocket, held by a 45 deg catch at the rear. Print
-// "test-socket" first.
+// each sit in a pocket, held by a 45 deg catch at the rear. Values settled
+// on test prints; "test-socket" is a two-socket coupon for other keystones.
 ks_d      = 10;    // socket depth
 hook_d    = 2;     // hook pocket height
 hook_y    = 6.5;   // hook pocket starts
 latch_d   = 5.5;   // latch pocket height (test prints: 4 too tight, 6 loose)
 latch_y   = 4;     // latch pocket starts
 hook_catch  = 2;   // catch overhang at the rear; the rear entry is
-latch_catch = 2;   // ks_h + hook_d + latch_d - both = 20 (18.5 too tight
-                   // for the latch to flex through, 20.5 loose)
-catch_land  = 0;   // flat behind each catch slope: thickens the catch to
-                   // take up front-to-back play
+latch_catch = 2.25; // ks_h + hook_d + latch_d - both = 19.75 (19.5 too
+                    // tight for the latch to flex through, 20 loose)
+catch_land  = 0.25; // flat behind each catch slope: thickens the catch to
+                    // take up front-to-back play
 ks_wall   = 3;     // above / below the pockets
 
 /* [Body] */
@@ -159,9 +159,9 @@ ks_z = (panel_h - ks_h) / 2; // bottom of the socket opening
 
 // One keystone socket, cut from the front (y=0) to ks_d. Origin: bottom
 // left of the opening. Profile is in (y, z), extruded across the opening.
-module ks_cut(w = ks_w, latch_catch = latch_catch, land = catch_land) {
-    y1 = ks_d - land; // catch slopes end
-    rotate([90, 0, 90]) linear_extrude(w) {
+module ks_cut() {
+    y1 = ks_d - catch_land; // catch slopes end
+    rotate([90, 0, 90]) linear_extrude(ks_w) {
         translate([-eps, 0]) square([ks_d + 2 * eps, ks_h]);
         polygon([[hook_y, eps], [hook_y, -hook_d], [y1 - hook_catch, -hook_d],
                  [y1, hook_catch - hook_d], [ks_d + eps, hook_catch - hook_d],
@@ -267,19 +267,11 @@ if (part == "test-module") print_pose() intersection() {
     right();
     translate([-1, -1, -1]) cube([right_free + ear_w + 2, 12, panel_h + 2]);
 }
-// socket coupon, to check the keystone fit: [width, latch catch, land] per
-// socket, loosest first. The tightest is at the end with the cut corner.
-// Rear entry is 22 - latch catch: 19.75, 19.5, 19.25, 19.0.
-test_sockets = [[14.9, 2.25, 0.25], [14.8, 2.5, 0.5], [14.7, 2.75, 0.75], [14.6, 3, 1]];
+// two-socket coupon, to check the keystone fit
 if (part == "test-socket") print_pose() difference() {
-    n = len(test_sockets);
-    h = ks_h + hook_d + latch_d + 2 * ks_wall;
-    cube([n * ks_pitch, ks_d, h]);
-    for (i = [0 : n - 1]) let (t = test_sockets[i])
-        translate([(ks_pitch - t[0]) / 2 + i * ks_pitch, 0, hook_d + ks_wall])
-            ks_cut(t[0], t[1], t[2]);
-    translate([n * ks_pitch, -eps, h]) rotate([-90, 0, 0])
-        linear_extrude(ks_d + 2 * eps) polygon([[1, -1], [-2.5, -1], [1, 2.5]]);
+    cube([2 * ks_pitch, ks_d, ks_h + hook_d + latch_d + 2 * ks_wall]);
+    for (i = [0, 1])
+        translate([(ks_pitch - ks_w) / 2 + i * ks_pitch, 0, hook_d + ks_wall]) ks_cut();
 }
 if (part == "assembly") {
     x0 = -225 + left_free; // firewall left side
