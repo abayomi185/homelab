@@ -22,12 +22,11 @@ tags: ["server-rack", "YHLR", "rack"]
 ## Space
 
 StarTech 4POSTRACK12U open frame (12U, 4-post), set to its shortest depth
-(~22"/560mm mounting depth). 11U used, **1U free**. Rack sits next to the bed,
-so new gear must be quiet.
+(~22"/560mm mounting depth).
 
 | Units | Occupant |
 | ----- | -------- |
-| 4U | [[../devices/YHLD-SERV1/YHLD-SERV1.md\|YHLD-SERV1]] (no free drive bays) |
+| 4U | [[../devices/YHLD-SERV1/YHLD-SERV1.md\|YHLD-SERV1]] |
 | 3U | [[../devices/YHLD-MSDO1.md\|YHLD-MSDO1]] + [[../devices/YHLD-GMBX1.md\|YHLD-GMBX1]] |
 | 1U | Firewall ([[../devices/YHLD-SERV2/YHLD-SERV2.md\|YHLD-SERV2]]) |
 | 1U | [[../devices/YHLD-SWCH2/YHLD-SWCH2.md\|YHLD-SWCH2]] |
