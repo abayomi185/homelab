@@ -19,8 +19,9 @@
 // sit flush in the flange.
 //
 // Assembly: screw ears to the firewall on the desk (driver goes in from the
-// outer side, through the end wall holes on the right ear), rack it, then
-// snap the insert in from the front and keystones in from the rear.
+// outer side: open on the right ear, through two channels in the socket
+// block on the left), rack it, then snap the insert in from the front and
+// keystones in from the rear.
 //
 // Export: see Makefile.
 // part = "right" | "left" | "plate" | "test-module" | "test-socket" | "assembly"
@@ -37,6 +38,7 @@ side_slot_len = 1;           // extra fore/aft play
 side_screw_d = 3.4;          // M3 clearance
 csk_d = 6.4;                 // M3 countersunk head (DIN 7991: 6.0)
 csk_angle = 90;              // included angle of the head
+drv_d = 8;                   // screwdriver channel through the socket block
 
 left_kind  = "sockets";      // "module" | "sockets" | "plain"
 right_kind = "module";
@@ -83,15 +85,14 @@ latch_catch = 2.25; // ks_h + hook_d + latch_d - both = 19.75 (19.5 too
                     // tight for the latch to flex through, 20 loose)
 catch_land  = 0.25; // flat behind each catch slope: thickens the catch to
                     // take up front-to-back play
-ks_wall   = 3;     // above / below the pockets
+ks_wall   = 3;     // above / below the pockets (test coupon)
 
 /* [Body] */
 face_t    = 4;
-plate_t   = 2.5;   // top / bottom plates, end wall
+plate_t   = 2.5;   // top / bottom plates
 flange_t  = 4;     // against the chassis
-box_d     = 60;    // plates; deep to resist the firewall twisting the ear
-flange_d  = 70;
-fillet    = 3;
+box_d     = 25;    // plates
+flange_d  = 25;
 
 /* [Labels] */
 labels    = true;
@@ -155,7 +156,12 @@ module side_slots(t) {
                 }
 }
 
-ks_z = (panel_h - ks_h) / 2; // bottom of the socket opening
+// Bottom of the socket opening. Off centre, so the lower driver channel
+// passes under the hook pocket and the upper one under the latch catch.
+ks_z = side_hole_z[0] + drv_d / 2 + 1.5 + hook_d;
+assert(ks_z + ks_h + latch_d <= panel_h - plate_t, "socket too tall");
+assert(ks_z + ks_h + latch_d - latch_catch >= side_hole_z[1] + drv_d / 2 + 1,
+       "driver channel cuts the latch catch");
 
 // One keystone socket, cut from the front (y=0) to ks_d. Origin: bottom
 // left of the opening. Profile is in (y, z), extruded across the opening.
@@ -173,13 +179,6 @@ module ks_cut() {
     }
 }
 
-// zip-tie slot pair in the shelf behind a port at x
-module tie_slots(x) {
-    for (s = [-1, 1])
-        translate([x + s * 5 - 1.1, box_d - 9, -eps])
-            cube([2.2, 4.5, plate_t + 2 * eps]);
-}
-
 // Ear in the right-hand frame.
 module ear_body(kind, free) {
     w = free + ear_w;
@@ -193,43 +192,26 @@ module ear_body(kind, free) {
             cube([flange_t, flange_d, panel_h]);                         // flange
             if (kind != "plain") for (z = [0, panel_h - plate_t])        // plates
                 translate([0, 0, z]) cube([box_x1, box_d, plate_t]);
-            if (kind == "module") {
-                translate([box_x1 - plate_t, 0, 0])                      // end wall
-                    cube([plate_t, box_d, panel_h]);
-                translate([mod_x0 - mod_lip, 0, lip_z0])                 // collar
-                    cube([cut_w + 2 * mod_lip, mod_panel_t, lip_z1 - lip_z0]);
-            }
-            if (kind == "sockets") {
-                translate([flange_t, 0, ks_z - hook_d - ks_wall])
-                    cube([inner_w(free), ks_d, ks_h + hook_d + latch_d + 2 * ks_wall]);
-                // face/plate fillets (45 deg, print-safe face down)
-                for (z = [plate_t, panel_h - plate_t])
-                    translate([flange_t, face_t, z])
-                        rotate([0, 90, 0]) linear_extrude(box_x1 - flange_t)
-                            polygon(z < panel_h / 2
-                                ? [[0, 0], [-fillet, 0], [0, fillet]]
-                                : [[0, 0], [fillet, 0], [0, fillet]]);
-            }
+            if (kind == "sockets")                                       // socket block
+                translate([flange_t, 0, 0]) cube([inner_w(free), ks_d, panel_h]);
         }
         rack_slots(w);
         side_slots(flange_t);
-        if (kind == "sockets") for (i = [0 : n - 1]) {
-            translate([socket_x(free, i) - ks_w / 2, 0, ks_z]) ks_cut();
-            tie_slots(socket_x(free, i));
-        }
-        if (kind == "module") {
-            translate([mod_x0, -eps, mod_z0])
-                cube([cut_w, max(face_t, mod_panel_t) + 2 * eps, cut_h]);
-            // thin the face around the cutout if the frame is thinner
-            if (mod_panel_t < face_t)
-                translate([mod_x0 - mod_lip + eps, mod_panel_t, lip_z0])
-                    cube([cut_w + 2 * mod_lip - eps, face_t, lip_z1 - lip_z0]);
-            for (i = [0 : n - 1]) tie_slots(mod_port_x(i));
-            // screwdriver access to the chassis screws, through the end
-            // wall and the collar ends
+        if (kind == "sockets") {
+            for (i = [0 : n - 1])
+                translate([socket_x(free, i) - ks_w / 2, 0, ks_z]) ks_cut();
+            // screwdriver channels to the chassis screws
             for (z = side_hole_z)
                 translate([flange_t + eps, side_hole_y, z])
-                    rotate([0, 90, 0]) cylinder(d = 7, h = box_x1 - flange_t);
+                    rotate([0, 90, 0]) cylinder(d = drv_d, h = box_x1 - flange_t);
+        }
+        if (kind == "module") {
+            assert(mod_panel_t <= face_t);
+            translate([mod_x0, -eps, mod_z0])
+                cube([cut_w, face_t + 2 * eps, cut_h]);
+            // thin the face to a lip around the cutout
+            translate([mod_x0 - mod_lip + eps, mod_panel_t, lip_z0])
+                cube([cut_w + 2 * mod_lip - eps, face_t, lip_z1 - lip_z0]);
         }
     }
 }
@@ -241,7 +223,7 @@ module ear(side, kind, free, first) {
         mirror([side < 0 ? 1 : 0, 0, 0]) ear_body(kind, free);
         // the insert carries its own label strip
         if (labels && kind == "sockets") for (i = [0 : n - 1])
-            translate([side * socket_x(free, i), label_depth, ks_z + ks_h + latch_d + 1])
+            translate([side * socket_x(free, i), label_depth, ks_z - 1.5 - label_size])
                 rotate([90, 0, 0]) linear_extrude(label_depth + 1)
                     text(str(side > 0 ? first + i : first + n - 1 - i),
                          size = label_size, halign = "center",
