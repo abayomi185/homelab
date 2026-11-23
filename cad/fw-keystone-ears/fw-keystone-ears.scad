@@ -81,7 +81,9 @@ arm_len   = 20;    // behind the ear face
 arm_cap   = 2.5;   // joins the arm to the body at the rear
 barb      = 0.9;   // catch behind the lip
 barb_len  = 2.5;
-barb_clr  = 0.2;   // lip rear to barb
+barb_clr  = 0.6;   // lip rear to barb (0.2 did not latch: the barb's
+                   // underside sags when printed)
+arm_clr   = 0.5;   // arm to the bezel slot around it
 
 /* [Keystone socket] */
 ks_w      = 14.9;  // front opening
@@ -228,8 +230,8 @@ module insert() {
             translate([-w / 2 + end + wall + i * (ks_w + wall), -bezel_t, ks_z]) ks_cut();
         // free the arms: through the bezel, up to the cap
         for (m = [0, 1]) mirror([m, 0, 0])
-            translate([-w / 2 - 0.3, -bezel_t - eps, az0 - 0.5])
-                cube([end + 0.3, bezel_t + arm_y1 + eps, arm_w + 1]);
+            translate([-w / 2 - arm_clr, -bezel_t - eps, az0 - arm_clr])
+                cube([end + arm_clr, bezel_t + arm_y1 + eps, arm_w + 2 * arm_clr]);
         if (labels) for (i = [0 : ins_ports - 1])
             translate([-w / 2 + end + wall + i * (ks_w + wall) + ks_w / 2,
                        -bezel_t + label_depth, ks_z + ks_h + 3])
