@@ -19,12 +19,19 @@
 // behind the ear face so the screws clear the 4mm face; countersunk M3 heads
 // sit flush in the flange.
 //
+// The firewall hangs from the front only, so each ear's flange runs back to
+// a third chassis screw near the rear and the top / bottom plates are
+// gussets from the rail to that flange. Without them the chassis rocks on
+// the front screws and the rear droops. The flange is a lattice over the
+// chassis side vent.
+//
 // Assembly: screw the empty ears to the firewall on the desk (driver goes in
 // from the open outer side), rack it, snap the inserts in from the front and
 // keystones in from the rear.
 //
 // Export: see Makefile.
-// part = "right" | "left" | "insert" | "plate" | "test-module" | "assembly"
+// part = "right" | "left" | "insert" | "plate" | "test-module" |
+//        "test-flange" | "assembly"
 
 part = "assembly";
 
@@ -38,6 +45,14 @@ side_slot_len = 1;           // extra fore/aft play
 side_screw_d = 3.4;          // M3 clearance
 csk_d = 6.4;                 // M3 countersunk head (DIN 7991: 6.0)
 csk_angle = 90;              // included angle of the head
+// Rear chassis screw: level with the upper front hole. Distance scaled from
+// a photo (163-168), so it gets a slot; pan head, no countersink. Print
+// "test-flange" to check all three holes before the ears.
+rear_hole_dy = 166;          // behind the front pair
+rear_slot = [10, 4];         // length along y, height
+vent_y = [22, 160];          // flange opening over the chassis side vent
+vent_z = [4.5, 36];
+strut_w = 4;                 // lattice struts across it
 
 left_kind  = "slot";         // "module" | "slot" | "plain"
 right_kind = "module";
@@ -106,8 +121,9 @@ catch_land  = 0.25; // flat behind each catch slope: thickens the catch to
 face_t    = 4;
 plate_t   = 2.5;   // top / bottom plates
 flange_t  = 4;     // against the chassis
-box_d     = 25;    // plates
-flange_d  = 25;
+box_d     = 25;    // plates at the rail end
+plate_rib = 10;    // plates at the rear end of the flange
+flange_d  = side_hole_y + rear_hole_dy + rear_slot[0] / 2 + 6;
 
 /* [Labels] */
 labels    = true;
@@ -161,6 +177,37 @@ module side_slots(t) {
                 }
 }
 
+// flange outline in (y, z)
+module flange_2d() {
+    vent = [vent_y[1] - vent_y[0], vent_z[1] - vent_z[0]];
+    difference() {
+        square([flange_d, panel_h]);
+        translate([vent_y[0], vent_z[0]]) square(vent);
+    }
+    // 45 deg struts: carry shear, print without support
+    intersection() {
+        translate([vent_y[0], vent_z[0]]) square(vent);
+        for (i = [0 : ceil(vent[0] / vent[1]) - 1])
+            hull() for (e = [0, 1])
+                translate([vent_y[0] + (i + e) * vent[1],
+                           (i % 2 == 0) == (e == 0) ? vent_z[0] : vent_z[1]])
+                    circle(d = strut_w);
+    }
+}
+
+module rear_slot_2d() {
+    translate([side_hole_y + rear_hole_dy, side_hole_z[1]])
+        slot(rear_slot[0] + rear_slot[1], rear_slot[1]);
+}
+
+// top / bottom plate outline in (x, y): gusset from the rail end to the
+// rear of the flange
+module plate_2d(free) {
+    x1 = free - rail_clr;
+    polygon([[0, 0], [x1, 0], [x1, box_d], [flange_t + plate_rib, flange_d],
+             [0, flange_d]]);
+}
+
 // Ear in the right-hand frame.
 module ear_body(kind, free) {
     w = free + ear_w;
@@ -169,12 +216,14 @@ module ear_body(kind, free) {
     difference() {
         union() {
             cube([w, face_t, panel_h]);                                  // face
-            cube([flange_t, flange_d, panel_h]);                         // flange
-            if (kind != "plain") for (z = [0, panel_h - plate_t])        // plates
-                translate([0, 0, z]) cube([free - rail_clr, box_d, plate_t]);
+            rotate([90, 0, 90]) linear_extrude(flange_t) flange_2d();    // flange
+            for (z = [0, panel_h - plate_t])                             // plates
+                translate([0, 0, z]) linear_extrude(plate_t) plate_2d(free);
         }
         rack_slots(w);
         side_slots(flange_t);
+        translate([-eps, 0, 0]) rotate([90, 0, 90])
+            linear_extrude(flange_t + 2 * eps) rear_slot_2d();
         if (kind != "plain") {
             translate([cut_x0, -eps, cut_z0])
                 cube([cut_w(kind), face_t + 2 * eps, cut_h]);
@@ -263,6 +312,14 @@ if (part == "plate") {
 if (part == "test-module") print_pose() intersection() {
     right();
     translate([-1, -1, -1]) cube([right_free + ear_w + 2, 12, panel_h + 2]);
+}
+// 1.2mm template of the flange, to check the three chassis holes (fits
+// either side)
+if (part == "test-flange") linear_extrude(1.2) difference() {
+    flange_2d();
+    rear_slot_2d();
+    for (z = side_hole_z) translate([side_hole_y, z])
+        slot(side_slot_len + side_screw_d, side_screw_d);
 }
 if (part == "assembly") {
     x0 = -225 + left_free; // firewall left side

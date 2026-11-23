@@ -1,6 +1,6 @@
 SCAD = fw-keystone-ears.scad
 
-all: fw-keystone-ear-right.stl fw-keystone-ear-left.stl fw-keystone-ear-insert.stl fw-keystone-ear-test-module.stl fw-keystone-ears-plate.3mf
+all: fw-keystone-ear-right.stl fw-keystone-ear-left.stl fw-keystone-ear-insert.stl fw-keystone-ear-test-module.stl fw-keystone-ear-test-flange.stl fw-keystone-ears-plate.3mf
 
 fw-keystone-ear-%.stl: $(SCAD)
 	openscad -o $@ -D 'part="$*"' $<
