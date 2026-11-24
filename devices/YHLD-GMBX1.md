@@ -32,7 +32,7 @@ tags: ["gaming", "pc", "windows"]
 
 ## Network
 
-| /        |                    |
+| /        |                            |
 | -------- | -------------------------- |
 | Hostname | `GameBox`                  |
 | Segment  | Main LAN / VLAN 10         |
