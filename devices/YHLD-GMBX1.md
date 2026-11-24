@@ -33,7 +33,8 @@ tags: ["gaming", "pc", "windows"]
 ## Network
 
 | /        |                    |
-| -------- | ------------------ |
-| Hostname | `GameBox`          |
-| Segment  | Main LAN / VLAN 10 |
-| Subnet   | `10.1.10.0/24`     |
+| -------- | -------------------------- |
+| Hostname | `GameBox`                  |
+| Segment  | Main LAN / VLAN 10         |
+| Subnet   | `10.1.10.0/24`             |
+| Uplink   | YHLD-SWCH2 port 23 (1 GbE) |

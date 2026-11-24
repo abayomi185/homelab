@@ -24,11 +24,12 @@ Native, Infra, Main, Guest and IoT gateways are `.1` on the firewall.
 ISP router ── SERV2 Eth0 ── firewall WAN
                SERV2 SFP1 ══ SWCH2 port 25 (trunk)
                                ├─ port 26 ══ SERV1
-                               ├─ port 11 ── IPMI1
-                               ├─ port 7 ─── SLZB1
-                               └─ port 1 ─── ACPT2 (PoE)
+                               ├─ port 23 ── GameBox (Main)
+                               ├─ port 21 ── ACPT2 (PoE)
+                               ├─ port 15 ── SLZB1 (IoT)
+                               ├─ port 13 ── IPMI1
+                               └─ port 1 ─── foreign AP (IoT)
                SERV2 SFP0 ── Mac Studio (Main)
-               SERV2 Eth3 ── GameBox (Main)
                SERV2 Eth1 ── OOB access
 ```
 

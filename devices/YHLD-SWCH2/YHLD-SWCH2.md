@@ -23,8 +23,11 @@ management on Infra VLAN as `yhld-swch2`.
 
 | Port | Connected to |
 | --- | --- |
-| 1 | YHLD-ACPT2 (PoE) |
-| 7 | YHLD-SLZB1 (IoT) |
-| 11 | YHLD-IPMI1 |
+| 1 | Foreign AP (IoT) |
+| 13 | YHLD-IPMI1 |
+| 15 | YHLD-SLZB1 (IoT) |
+| 21 | YHLD-ACPT2 (PoE) |
+| 23 | YHLD-GMBX1 (Main) |
+| 24 | Main access, spare |
 | 25 (SFP+) | YHLD-SERV2 SFP1, firewall trunk |
 | 26 (SFP+) | YHLD-SERV1 |
