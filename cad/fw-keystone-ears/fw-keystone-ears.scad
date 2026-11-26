@@ -45,9 +45,10 @@ side_slot_len = 1;           // extra fore/aft play
 side_screw_d = 3.4;          // M3 clearance
 csk_d = 6.4;                 // M3 countersunk head (DIN 7991: 6.0)
 csk_angle = 90;              // included angle of the head
-// Rear chassis screw: level with the upper front hole. Distance scaled from
-// a photo (163-168), so it gets a slot; pan head, no countersink. Print
-// "test-flange" to check all three holes before the ears.
+// Rear chassis screw: level with one of the front holes. The flange is
+// slotted at both heights, so it fits whichever. Distance scaled from a
+// photo (163-168), hence slots; pan head, no countersink. "test-flange" is
+// a thin template of the holes.
 rear_hole_dy = 166;          // behind the front pair
 rear_slot = [10, 4];         // length along y, height
 vent_y = [22, 160];          // flange opening over the chassis side vent
@@ -198,7 +199,7 @@ module flange_2d() {
 }
 
 module rear_slot_2d() {
-    translate([side_hole_y + rear_hole_dy, side_hole_z[1]])
+    for (z = side_hole_z) translate([side_hole_y + rear_hole_dy, z])
         slot(rear_slot[0] + rear_slot[1], rear_slot[1]);
 }
 
