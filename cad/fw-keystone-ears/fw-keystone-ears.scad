@@ -119,7 +119,9 @@ catch_land  = 0.25; // flat behind each catch slope: thickens the catch to
 
 /* [Body] */
 face_t    = 4;
-plate_t   = 2.5;   // top / bottom plates
+plate_t   = 2;     // top / bottom plates
+env_inset = 1;     // plates and flange stay this far inside the panel height
+                   // behind the face, clear of the units above and below
 flange_t  = 4;     // against the chassis
 box_d     = 25;    // plates at the rail end
 plate_rib = 10;    // plates at the rear end of the flange
@@ -181,7 +183,7 @@ module side_slots(t) {
 module flange_2d() {
     vent = [vent_y[1] - vent_y[0], vent_z[1] - vent_z[0]];
     difference() {
-        square([flange_d, panel_h]);
+        translate([0, env_inset]) square([flange_d, panel_h - 2 * env_inset]);
         translate([vent_y[0], vent_z[0]]) square(vent);
     }
     // 45 deg struts: carry shear, print without support
@@ -211,13 +213,13 @@ module plate_2d(free) {
 // Ear in the right-hand frame.
 module ear_body(kind, free) {
     w = free + ear_w;
-    lip_z0 = max(plate_t, cut_z0 - mod_lip);
-    lip_z1 = min(panel_h - plate_t, cut_z0 + cut_h + mod_lip);
+    lip_z0 = max(env_inset + plate_t, cut_z0 - mod_lip);
+    lip_z1 = min(panel_h - env_inset - plate_t, cut_z0 + cut_h + mod_lip);
     difference() {
         union() {
             cube([w, face_t, panel_h]);                                  // face
             rotate([90, 0, 90]) linear_extrude(flange_t) flange_2d();    // flange
-            for (z = [0, panel_h - plate_t])                             // plates
+            for (z = [env_inset, panel_h - env_inset - plate_t])         // plates
                 translate([0, 0, z]) linear_extrude(plate_t) plate_2d(free);
         }
         rack_slots(w);
