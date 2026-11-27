@@ -32,9 +32,12 @@ tags: ["gaming", "pc", "windows"]
 
 ## Network
 
-| /        |                            |
-| -------- | -------------------------- |
-| Hostname | `GameBox`                  |
-| Segment  | Main LAN / VLAN 10         |
-| Subnet   | `10.1.10.0/24`             |
-| Uplink   | YHLD-SWCH2 port 23 (1 GbE) |
+| /        |                              |
+| -------- | ---------------------------- |
+| Hostname | `GameBox`                    |
+| MAC      | `74:56:3C:CB:58:A4` (2.5GbE) |
+| Segment  | Main LAN / VLAN 10           |
+| Subnet   | `10.1.10.0/24`               |
+| Uplink   | YHLD-SWCH2 port 23 (1 GbE)   |
+
+Wake-on-LAN is enabled on the wired NIC (magic packet to the MAC above).
